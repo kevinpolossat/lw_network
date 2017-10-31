@@ -39,8 +39,11 @@ namespace lw_tcp_server {
         template<typename T>
         void Connect(T const & addr);
 
-        void SetOpt();
-        void UnsetOpt();
+        template<typename T>
+        void SetOpt(int optname, T const &value, int level = SOL_SOCKET);
+
+        template<typename T>
+        void GetOpt(int optname, T &res, socklen_t &sizeOfRes, int level = SOL_SOCKET);
 
     private:
         int domain_;

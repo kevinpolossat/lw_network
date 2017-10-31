@@ -86,7 +86,7 @@ void lw_tcp_server::Socket::Bind(const T &addr) {
             std::is_same<T, IPV4_ADDR>::value ||
             std::is_same<T, IPV6_ADDR>::value,
             "addr must be of type IPV4_ADDR or IPV6_ADDR");
-    int ret = bind(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof(addr));
+    int ret = bind(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof addr);
     if (ret == -1) {
         throw BindError(std::strerror(errno));
     }
@@ -98,8 +98,25 @@ void lw_tcp_server::Socket::Connect(const T &addr) {
             std::is_same<T, IPV4_ADDR>::value ||
             std::is_same<T, IPV6_ADDR>::value,
             "addr must be of type IPV4_ADDR or IPV6_ADDR");
-    int ret = connect(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof(addr));
+    int ret = connect(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof addr);
     if (ret == -1) {
         throw ConnectError(std::strerror(errno));
+    }
+}
+
+template<typename T>
+void lw_tcp_server::Socket::SetOpt(int optname, const T &value, int level) {
+    int ret = setsockopt(sock_fd_, level, optname, &value, sizeof value);
+    if (ret == -1) {
+        throw SetOptError(std::strerror(errno));
+    }
+}
+
+template<typename T>
+void lw_tcp_server::Socket::GetOpt(int optname, T &res, socklen_t &sizeOfRes, int level) {
+    sizeOfRes = sizeof res;
+    int ret = getsockopt(sock_fd_, level, optname, &res, &sizeOfRes);
+    if (ret == -1) {
+        throw GetOptError(std::strerror(errno));
     }
 }

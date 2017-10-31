@@ -8,6 +8,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 file(GLOB_RECURSE SOURCES ./src/*.cc)
 file(GLOB_RECURSE HEADERS ./src/*.h)
+file(GLOB_RECURSE TEST_SOURCE_FILES ./test/*.cc)
 
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
@@ -45,3 +46,8 @@ add_library(lw-network-static STATIC $<TARGET_OBJECTS:LIB_OBJECT>)
 
 set_target_properties(lw-network-static PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(lw-network-shared PROPERTIES LINKER_LANGUAGE CXX)
+
+enable_testing()
+add_executable(lw-network_test ${TEST_SOURCE_FILES})
+target_link_libraries(lw-network_test gmock_main)
+add_test(NAME testing_lw-network COMMAND lw-network_test)

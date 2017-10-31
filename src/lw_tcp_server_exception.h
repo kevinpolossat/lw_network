@@ -12,7 +12,7 @@ namespace lw_tcp_server {
     class OpenError: public std::exception {
     public:
         explicit OpenError(std::string const & what): what_(what) {}
-        const char * what() const { return what_.c_str(); }
+        const char * what() const noexcept { return what_.c_str(); }
     private:
         std::string what_;
     };
@@ -20,7 +20,7 @@ namespace lw_tcp_server {
     class CloseError: public std::exception {
     public:
         explicit CloseError(std::string const & what): what_(what) {}
-        const char * what() const { return what_.c_str(); }
+        const char * what() const noexcept { return what_.c_str(); }
     private:
         std::string what_;
     };

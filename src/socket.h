@@ -9,7 +9,7 @@
 #include <string>
 #include <netdb.h>
 
-namespace lw_tcp_socket {
+namespace lw_tcp_server {
     class Socket {
     public:
         Socket();
@@ -33,6 +33,7 @@ namespace lw_tcp_socket {
         int domain_;
         int type_;
         int protocol_;
+        int sock_fd_;
     };
 }
 

@@ -35,6 +35,8 @@ if(CMAKE_VERSION VERSION_LESS 2.8.11)
             "${gmock_SOURCE_DIR}/include")
 endif()
 
+include_directories(./src)
+
 # this is the "object library" target: compiles the sources only once
 add_library(LIB_OBJECT OBJECT ${SOURCES} ${HEADERS})
 

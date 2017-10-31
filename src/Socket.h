@@ -6,11 +6,9 @@
 #define LW_NETWORK_SOCKET_H
 
 
-
 class Socket {
 
 };
-
 
 
 #endif //LW_NETWORK_SOCKET_H

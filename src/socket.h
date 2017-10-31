@@ -12,7 +12,7 @@
 namespace lw_network {
     class Socket {
     public:
-        Socket(int sock_type, std::string const & proto);
+        Socket();
         ~Socket();
         Socket(Socket const & other);
         Socket(Socket && other);
@@ -24,8 +24,6 @@ namespace lw_network {
         int Bind();
         int Connect();
         int Accept();
-
-        std::string const & Port() const;
     private:
         int sock_fd_;
         int sock_opt_;

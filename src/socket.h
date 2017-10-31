@@ -12,6 +12,9 @@
 namespace lw_tcp_server {
     class Socket {
     public:
+        using IPV4_ADDR = struct sockaddr_in;
+        using IPV6_ADDR = struct sockaddr_in6;
+
         Socket();
         Socket(int domain, int type, int protocol);
         ~Socket();
@@ -28,6 +31,16 @@ namespace lw_tcp_server {
         void Open(int domain, int type, int protocol);
         void Open();
         void Close();
+
+        template<typename T>
+        void Bind(T const & addr);
+        void Listen(int nb_connection_allowed = 10);
+
+        template<typename T>
+        void Connect(T const & addr);
+
+        void SetOpt();
+        void UnsetOpt();
 
     private:
         int domain_;

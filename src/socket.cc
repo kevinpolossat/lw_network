@@ -4,6 +4,7 @@
 
 #include <unistd.h>
 #include <cerrno>
+#include <type_traits>
 #include "socket.h"
 #include "lw_tcp_server_exception.h"
 
@@ -45,7 +46,9 @@ int lw_tcp_server::Socket::Protocol() const {
 }
 
 void lw_tcp_server::Socket::Open(int domain, int type, int protocol) {
-    Close();
+    if (sock_fd_ == -1) {
+        Close();
+    }
     domain_ = domain;
     type_ = type;
     protocol_ = protocol;
@@ -55,7 +58,7 @@ void lw_tcp_server::Socket::Open(int domain, int type, int protocol) {
 void lw_tcp_server::Socket::Open() {
     sock_fd_ = socket(domain_, type_, protocol_);
     if (sock_fd_ == -1) {
-        throw OpenError(strerror(errno));
+        throw OpenError(std::strerror(errno));
     }
 }
 
@@ -66,6 +69,37 @@ void lw_tcp_server::Socket::Close() {
     int ret = close(sock_fd_);
     sock_fd_ = -1;
     if (ret == -1) {
-        throw CloseError(strerror(errno));
+        throw CloseError(std::strerror(errno));
+    }
+}
+
+void lw_tcp_server::Socket::Listen(int nb_connection_allowed) {
+    int ret = listen(sock_fd_, nb_connection_allowed);
+    if (ret == -1) {
+        throw ListenError(std::strerror(errno));
+    }
+}
+
+template<typename T>
+void lw_tcp_server::Socket::Bind(const T &addr) {
+    static_assert(
+            std::is_same<T, IPV4_ADDR>::value ||
+            std::is_same<T, IPV6_ADDR>::value,
+            "addr must be of type IPV4_ADDR or IPV6_ADDR");
+    int ret = bind(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof(addr));
+    if (ret == -1) {
+        throw BindError(std::strerror(errno));
+    }
+}
+
+template<typename T>
+void lw_tcp_server::Socket::Connect(const T &addr) {
+    static_assert(
+            std::is_same<T, IPV4_ADDR>::value ||
+            std::is_same<T, IPV6_ADDR>::value,
+            "addr must be of type IPV4_ADDR or IPV6_ADDR");
+    int ret = connect(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof(addr));
+    if (ret == -1) {
+        throw ConnectError(std::strerror(errno));
     }
 }

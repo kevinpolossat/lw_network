@@ -14,8 +14,8 @@ public:
 };
 
 TEST_F(SocketTest, instantiation) {
-    lw_network::Socket s;
-    lw_network::Socket s2(42, 43, 44);
+    lw_tcp_socket::Socket s;
+    lw_tcp_socket::Socket s2(42, 43, 44);
 
     ASSERT_EQ(s.Protocol(), -1);
     ASSERT_EQ(s.Type(), -1);

@@ -9,7 +9,7 @@
 #include <string>
 #include <netdb.h>
 
-namespace lw_network {
+namespace lw_tcp_socket {
     class Socket {
     public:
         Socket();
@@ -24,6 +24,11 @@ namespace lw_network {
         int Domain() const;
         int Type() const;
         int Protocol() const;
+
+        void Open(int domain, int type, int protocol);
+        void Open();
+        void Close();
+
     private:
         int domain_;
         int type_;

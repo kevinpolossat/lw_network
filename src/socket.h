@@ -13,22 +13,21 @@ namespace lw_network {
     class Socket {
     public:
         Socket();
+        Socket(int domain, int type, int protocol);
         ~Socket();
-        Socket(Socket const & other);
-        Socket(Socket && other);
-        Socket & operator = (Socket const & other);
-        Socket & operator = (Socket && other);
+        Socket(Socket && other) noexcept;
+        Socket & operator = (Socket && other) noexcept;
 
-        int Open();
-        int Close();
-        int Bind();
-        int Connect();
-        int Accept();
+        Socket(Socket const & other) = delete;
+        Socket & operator = (Socket const & other) = delete;
+
+        int Domain() const;
+        int Type() const;
+        int Protocol() const;
     private:
-        int sock_fd_;
-        int sock_opt_;
-        std::string port_;
-        struct addrinfo addr_;
+        int domain_;
+        int type_;
+        int protocol_;
     };
 }
 

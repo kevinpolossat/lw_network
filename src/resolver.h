@@ -41,6 +41,11 @@ namespace lw_tcp_server {
             return m_ptr_ != rawIterator.GetConstPtr();
         }
 
+        operator bool() const
+        {
+            return m_ptr_ != nullptr;
+        }
+
         Iterator<T> & operator ++ () {
             m_ptr_ = m_ptr_->ai_next;
             return (*this);

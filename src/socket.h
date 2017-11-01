@@ -15,8 +15,8 @@ namespace lw_tcp_server {
 
     class Socket {
     public:
-        using IPV4_ADDR = struct sockaddr_in;
-        using IPV6_ADDR = struct sockaddr_in6;
+        using IPV4_ADDR = sockaddr_in;
+        using IPV6_ADDR = sockaddr_in6;
 
         Socket();
         Socket(int domain, int type, int protocol);

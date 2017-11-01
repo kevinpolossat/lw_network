@@ -86,7 +86,7 @@ void lw_tcp_server::Socket::Bind(const T &addr) {
             std::is_same<T, IPV4_ADDR>::value ||
             std::is_same<T, IPV6_ADDR>::value,
             "addr must be of type IPV4_ADDR or IPV6_ADDR");
-    int ret = bind(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof addr);
+    int ret = bind(sock_fd_, reinterpret_cast<sockaddr const *>(&addr), sizeof addr);
     if (ret == -1) {
         throw BindError(std::strerror(errno));
     }
@@ -98,7 +98,7 @@ void lw_tcp_server::Socket::Connect(const T &addr) {
             std::is_same<T, IPV4_ADDR>::value ||
             std::is_same<T, IPV6_ADDR>::value,
             "addr must be of type IPV4_ADDR or IPV6_ADDR");
-    int ret = connect(sock_fd_, reinterpret_cast<struct sockaddr const *>(&addr), sizeof addr);
+    int ret = connect(sock_fd_, reinterpret_cast<sockaddr const *>(&addr), sizeof addr);
     if (ret == -1) {
         throw ConnectError(std::strerror(errno));
     }
@@ -122,10 +122,10 @@ void lw_tcp_server::Socket::GetOpt(int optname, T &res, socklen_t &sizeOfRes, in
 }
 
 void lw_tcp_server::Socket::Accept(lw_tcp_server::Socket &out) {
-    struct sockaddr_storage their_addr;
+    sockaddr_storage their_addr;
     socklen_t addr_size;
 
-    int ret = accept(sock_fd_, reinterpret_cast<struct sockaddr *>(&their_addr), &addr_size);
+    int ret = accept(sock_fd_, reinterpret_cast<sockaddr *>(&their_addr), &addr_size);
     if (ret == -1) {
         throw AcceptError(std::strerror(errno));
     }

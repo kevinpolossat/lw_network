@@ -72,6 +72,14 @@ namespace lw_tcp_server {
     private:
         std::string what_;
     };
+
+    class ResolveError: public std::exception {
+    public:
+        explicit ResolveError(std::string const & what): what_(what) {}
+        const char * what() const noexcept { return what_.c_str(); }
+    private:
+        std::string what_;
+    };
 }
 
 #endif //LW_NETWORK_LW_TCP_SERVER_EXCEPTION_HPP

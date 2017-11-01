@@ -28,8 +28,13 @@ namespace lw_tcp_server {
         Socket & operator = (Socket const & other) = delete;
 
         int Domain() const;
+        void SetDomain(int domain);
+
         int Type() const;
+        void SetType(int type);
+
         int Protocol() const;
+        void SetProtocol(int protocol);
 
         void Open(int domain, int type, int protocol);
         void Open();

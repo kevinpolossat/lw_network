@@ -136,3 +136,15 @@ std::int64_t lw_tcp_server::Socket::Recv(char *buff, std::size_t len) {
 std::int64_t lw_tcp_server::Socket::Send(char *buff, std::size_t len) {
     return send(sock_fd_, buff, len, 0);
 }
+
+void lw_tcp_server::Socket::SetDomain(int domain) {
+    domain_ = domain;
+}
+
+void lw_tcp_server::Socket::SetType(int type) {
+    type_ = type;
+}
+
+void lw_tcp_server::Socket::SetProtocol(int protocol) {
+    protocol_ = protocol;
+}

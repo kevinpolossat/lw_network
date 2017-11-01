@@ -46,9 +46,6 @@ int lw_tcp_server::Socket::Protocol() const {
 }
 
 void lw_tcp_server::Socket::Open(int domain, int type, int protocol) {
-    if (sock_fd_ == -1) {
-        Close();
-    }
     domain_ = domain;
     type_ = type;
     protocol_ = protocol;

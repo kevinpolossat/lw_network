@@ -120,3 +120,22 @@ void lw_tcp_server::Socket::GetOpt(int optname, T &res, socklen_t &sizeOfRes, in
         throw GetOptError(std::strerror(errno));
     }
 }
+
+void lw_tcp_server::Socket::Accept(lw_tcp_server::Socket &out) {
+    struct sockaddr_storage their_addr;
+    socklen_t addr_size;
+
+    int ret = accept(sock_fd_, reinterpret_cast<struct sockaddr *>(&their_addr), &addr_size);
+    if (ret == -1) {
+        throw AcceptError(std::strerror(errno));
+    }
+    out.sock_fd_ = ret;
+}
+
+std::int64_t lw_tcp_server::Socket::Recv(char *buff, std::size_t len) {
+    return recv(sock_fd_, buff, len, 0);
+}
+
+std::int64_t lw_tcp_server::Socket::Send(char *buff, std::size_t len) {
+    return send(sock_fd_, buff, len, 0);
+}

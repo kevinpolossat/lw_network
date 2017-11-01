@@ -8,8 +8,11 @@
 
 #include <string>
 #include <netdb.h>
+#include <vector>
 
 namespace lw_tcp_server {
+    using ByteArray = std::vector<std::uint8_t>;
+
     class Socket {
     public:
         using IPV4_ADDR = struct sockaddr_in;
@@ -44,6 +47,11 @@ namespace lw_tcp_server {
 
         template<typename T>
         void GetOpt(int optname, T &res, socklen_t &sizeOfRes, int level = SOL_SOCKET);
+
+        void Accept(Socket &out);
+
+        std::int64_t Recv(char *buff, std::size_t len);
+        std::int64_t Send(char *buff, std::size_t len);
 
     private:
         int domain_;

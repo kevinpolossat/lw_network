@@ -37,3 +37,6 @@
 #Cmake
 cmake-build-debug
 build
+
+#Only library
+main.cc

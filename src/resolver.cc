@@ -2,7 +2,7 @@
 // Created by Kévin POLOSSAT on 01/11/2017.
 //
 
-#include "lw_tcp_server_exception.h"
+#include "lw_tcp_server_error.h"
 #include "resolver.h"
 
 lw_tcp_server::Resolver::Resolver():

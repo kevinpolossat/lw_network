@@ -132,3 +132,36 @@ signed_size_type network::socket_operations::send(
 #endif
     return 0;
 }
+
+template<typename SockLenType>
+void ::network::socket_operations::setsockopt(
+        socket_type s, int level, int optname, void const *optval, std::size_t optlen, network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    int ret = ::setsockopt(s, level, optname, optval, static_cast<SockLenType>(optlen));
+    if (ret == socket_error) {
+        e = errno;
+    }
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
+
+template<typename SockLenType>
+void
+::network::socket_operations::getsockopt(
+        socket_type s, int level, int optname, void *optval, std::size_t *optlen, network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    auto len = optlen ? static_cast<SockLenType>(*optlen) : 0;
+    int ret = ::getsockopt(s, level, optname, optval, &len);
+    if (ret == socket_error) {
+        e = errno;
+    }
+    *optlen = static_cast<std::size_t>(len);
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}

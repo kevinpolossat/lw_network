@@ -15,7 +15,7 @@
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 
-using SOCKET = int;
+using socket_type = int;
 using Buffer = iovec;
 using signed_size_type = ssize_t;
 
@@ -29,7 +29,7 @@ using signed_size_type = ssize_t;
 
 #endif
 
-static constexpr SOCKET invalid_socket = INVALID_SOCKET;
+static constexpr socket_type invalid_socket = INVALID_SOCKET;
 static constexpr int socket_error = SOCKET_ERROR;
 namespace network {
 using error_code = int;
@@ -37,17 +37,17 @@ static constexpr error_code no_error = 0;
 
 namespace socket_operations { // Low level socket function defined in according with the os.
 
-SOCKET socket(int domain, int type, int protocol, network::error_code &e);
-void close(SOCKET s, network::error_code &e);
+socket_type socket(int domain, int type, int protocol, network::error_code &e);
+void close(socket_type s, network::error_code &e);
 template<typename SockLenType>
-void bind(SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
-void listen(SOCKET s, int backlog, network::error_code &e);
+void bind(socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
+void listen(socket_type s, int backlog, network::error_code &e);
 template<typename SockLenType>
-void connect(SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
+void connect(socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
 template<typename SockLenType>
-SOCKET accept(SOCKET s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e);
-signed_size_type recv(SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
-signed_size_type send(SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
+socket_type accept(socket_type s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e);
+signed_size_type recv(socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
+signed_size_type send(socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
 } // socket_operations
 } // network
 

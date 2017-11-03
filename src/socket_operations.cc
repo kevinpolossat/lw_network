@@ -4,9 +4,9 @@
 
 #include "socket_operations.h"
 
-SOCKET network::socket_operations::socket(int domain, int type, int protocol, network::error_code &e) {
+socket_type network::socket_operations::socket(int domain, int type, int protocol, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
-    SOCKET s = ::socket(domain, type, protocol);
+    socket_type s = ::socket(domain, type, protocol);
     if (s == socket_error) {
         e = errno;
     }
@@ -19,7 +19,7 @@ SOCKET network::socket_operations::socket(int domain, int type, int protocol, ne
     return 0;
 }
 
-void network::socket_operations::close(SOCKET s, network::error_code &e) {
+void network::socket_operations::close(socket_type s, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     int ret = ::close(s);
     if (ret == socket_error) {
@@ -34,7 +34,7 @@ void network::socket_operations::close(SOCKET s, network::error_code &e) {
 
 template<typename SockLenType>
 void network::socket_operations::bind(
-        SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e) {
+        socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     int ret = ::bind(s, addr, static_cast<SockLenType>(addrlen));
     if (ret == socket_error) {
@@ -47,7 +47,7 @@ void network::socket_operations::bind(
 #endif
 }
 
-void network::socket_operations::listen(SOCKET s, int backlog, network::error_code &e) {
+void network::socket_operations::listen(socket_type s, int backlog, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     int ret = ::listen(s, backlog);
     if (ret == socket_error) {
@@ -62,7 +62,7 @@ void network::socket_operations::listen(SOCKET s, int backlog, network::error_co
 
 template<typename SockLenType>
 void network::socket_operations::connect(
-        SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e) {
+        socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     int ret = ::connect(s, addr, static_cast<SockLenType>(addrlen));
     if (ret == socket_error) {
@@ -76,10 +76,10 @@ void network::socket_operations::connect(
 }
 
 template<typename SockLenType>
-int network::socket_operations::accept(SOCKET s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e) {
+int network::socket_operations::accept(socket_type s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     auto len = addrlen ? static_cast<SockLenType>(*addrlen) : 0;
-    SOCKET accepted = ::accept(s, addr, &len);
+    socket_type accepted = ::accept(s, addr, &len);
     if (accepted == invalid_socket) {
         e = errno;
     }
@@ -96,7 +96,7 @@ int network::socket_operations::accept(SOCKET s, struct sockaddr *addr, std::siz
 }
 
 signed_size_type network::socket_operations::recv(
-        SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e) {
+        socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     msghdr msg = {0};
     msg.msg_iov = buff;
@@ -115,7 +115,7 @@ signed_size_type network::socket_operations::recv(
 }
 
 signed_size_type network::socket_operations::send(
-        SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e) {
+        socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
     msghdr msg = {0};
     msg.msg_iov = buff;

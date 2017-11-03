@@ -5,11 +5,12 @@
 #ifndef LW_TCP_SERVER_SOCKET_DEF_H
 #define LW_TCP_SERVER_SOCKET_DEF_H
 
+#if defined (__linux__) || defined (__APPLE__)
+
 #include <cstddef>
 #include <sys/socket.h>
-
-namespace network {
-#if defined (__linux__) || defined (__APPLE__)
+#include <unistd.h>
+#include <cerrno>
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
@@ -27,22 +28,26 @@ using signed_size_type = ssize_t;
 #error "unknown platform"
 
 #endif
-namespace socket_operations { // Low level socket function defined in according with the os.
 
 static constexpr SOCKET invalid_socket = INVALID_SOCKET;
 static constexpr int socket_error = SOCKET_ERROR;
+namespace network {
+using error_code = int;
+static constexpr error_code no_error = 0;
 
-SOCKET socket(int domain, int type, int protocol);
-int close(SOCKET s);
+namespace socket_operations { // Low level socket function defined in according with the os.
+
+SOCKET socket(int domain, int type, int protocol, network::error_code &e);
+void close(SOCKET s, network::error_code &e);
 template<typename SockLenType>
-int bind(SOCKET s, const struct sockaddr *addr, std::size_t addrlen);
-int listen(SOCKET s, int backlog);
+void bind(SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
+void listen(SOCKET s, int backlog, network::error_code &e);
 template<typename SockLenType>
-int connect(SOCKET s, const struct sockaddr *addr, std::size_t addrlen);
+void connect(SOCKET s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
 template<typename SockLenType>
-int accept(SOCKET s, struct sockaddr *addr, std::size_t addrlen);
-signed_size_type recv(SOCKET s, Buffer *buff, std::size_t size, int flags);
-signed_size_type send(SOCKET s, Buffer *buff, std::size_t size, int flags);
+SOCKET accept(SOCKET s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e);
+signed_size_type recv(SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
+signed_size_type send(SOCKET s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
 } // socket_operations
 } // network
 

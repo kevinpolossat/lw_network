@@ -9,7 +9,6 @@
 #include <string>
 
 namespace lw_tcp_server {
-    using error_code = int;
 
     class OpenError: public std::exception {
     public:

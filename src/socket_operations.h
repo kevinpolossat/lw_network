@@ -12,8 +12,8 @@
 #include <unistd.h>
 #include <cerrno>
 
-#define INVALID_SOCKET -1
-#define SOCKET_ERROR -1
+#define INVALID_SOCKET (-1)
+#define SOCKET_ERROR (-1)
 
 using socket_type = int;
 using Buffer = iovec;

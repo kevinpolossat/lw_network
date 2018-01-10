@@ -2,15 +2,15 @@
 // Created by Kévin POLOSSAT on 01/11/2017.
 //
 
-#include "lw_tcp_server_error.h"
+#include "lw_network_error.h"
 #include "resolver.h"
 
-lw_tcp_server::Resolver::Resolver():
-        family_(0), sock_type_(0), protocol_(0), flags_(0), addrs_(nullptr, [](addrinfo *to_free){ freeaddrinfo(to_free); }) {
+lw_network::Resolver::Resolver():
+        family_(0), sock_type_(0), protocol_(0), flags_(0) {
 
 }
 
-lw_tcp_server::Resolver::Resolver(
+lw_network::Resolver::Resolver(
         std::string const &node,
         std::string const &service,
         int family,
@@ -22,28 +22,23 @@ lw_tcp_server::Resolver::Resolver(
         family_(family),
         sock_type_(sock_type),
         protocol_(protocol),
-        flags_(flags),
-        addrs_(nullptr, [](addrinfo *to_free){ freeaddrinfo(to_free); }) {}
+        flags_(flags) {}
 
-lw_tcp_server::Resolver::Resolver(Resolver &&other) noexcept:
+lw_network::Resolver::Resolver(Resolver &&other) noexcept:
         node_(std::move(other.node_)),
         service_(std::move(other.service_)),
         family_(other.family_),
         sock_type_(other.sock_type_),
         protocol_(other.protocol_),
-        flags_(other.flags_),
-        addrs_(std::move(other.addrs_)) {
-}
+        flags_(other.flags_) {}
 
-lw_tcp_server::Resolver &lw_tcp_server::Resolver::operator=(Resolver &&other) noexcept {
+lw_network::Resolver &lw_network::Resolver::operator=(Resolver &&other) noexcept {
     node_ = std::move(other.node_);
     service_ = std::move(other.service_);
     family_ = other.family_;
     sock_type_ = other.sock_type_;
     protocol_ = other.protocol_;
     flags_ = other.flags_;
-    addrs_.reset();
-    addrs_ = std::move(other.addrs_);
     other.family_ = -1;
     other.sock_type_ = -1;
     other.protocol_ = -1;
@@ -51,55 +46,61 @@ lw_tcp_server::Resolver &lw_tcp_server::Resolver::operator=(Resolver &&other) no
     return *this;
 }
 
-std::string const &lw_tcp_server::Resolver::Node() const {
+std::string const &lw_network::Resolver::Node() const {
     return node_;
 }
 
-void lw_tcp_server::Resolver::SetNode(std::string const &node) {
+lw_network::Resolver & lw_network::Resolver::SetNode(std::string const &node) {
     node_ = node;
+    return *this;
 }
 
-std::string const &lw_tcp_server::Resolver::Service() const {
+std::string const &lw_network::Resolver::Service() const {
     return service_;
 }
 
-void lw_tcp_server::Resolver::SetService(std::string const &service) {
+lw_network::Resolver & lw_network::Resolver::SetService(std::string const &service) {
     service_ = service;
+    return *this;
 }
 
-int lw_tcp_server::Resolver::Family() const {
+int lw_network::Resolver::Family() const {
     return family_;
 }
 
-void lw_tcp_server::Resolver::SetFamily(int family) {
+lw_network::Resolver & lw_network::Resolver::SetFamily(int family) {
     family_ = family;
+    return *this;
 }
 
-int lw_tcp_server::Resolver::SockType() const {
+int lw_network::Resolver::SockType() const {
     return sock_type_;
 }
 
-void lw_tcp_server::Resolver::SetSockType(int sock_type) {
+lw_network::Resolver & lw_network::Resolver::SetSockType(int sock_type) {
     sock_type_ = sock_type;
+    return *this;
 }
 
-int lw_tcp_server::Resolver::Protocol() const {
+int lw_network::Resolver::Protocol() const {
     return protocol_;
 }
 
-void lw_tcp_server::Resolver::SetProtocol(int protocol) {
+lw_network::Resolver & lw_network::Resolver::SetProtocol(int protocol) {
     protocol_ = protocol;
+    return *this;
 }
 
-int lw_tcp_server::Resolver::Flags() const {
+int lw_network::Resolver::Flags() const {
     return flags_;
 }
 
-void lw_tcp_server::Resolver::SetFlags(int flags) {
+lw_network::Resolver & lw_network::Resolver::SetFlags(int flags) {
     flags_ = flags;
+    return *this;
 }
 
-lw_tcp_server::iterator lw_tcp_server::Resolver::Resolve(
+std::vector<lw_network::EndPoint> lw_network::Resolver::Resolve(
         std::string const &node,
         std::string const &service,
         int family,
@@ -115,7 +116,7 @@ lw_tcp_server::iterator lw_tcp_server::Resolver::Resolve(
     return Resolve();
 }
 
-lw_tcp_server::iterator lw_tcp_server::Resolver::Resolve() {
+std::vector<lw_network::EndPoint> lw_network::Resolver::Resolve() const {
     addrinfo hints = {0};
     addrinfo * res = nullptr;
     int status;
@@ -131,7 +132,13 @@ lw_tcp_server::iterator lw_tcp_server::Resolver::Resolve() {
             &res)) != 0) {
         throw ResolveError(gai_strerror(status));
     }
-    addrs_.reset(res);
-    return lw_tcp_server::iterator(addrs_.get());
+    addrinfo *it = res;
+    std::vector<lw_network::EndPoint> endPoints;
+    std::string hostName = it->ai_canonname ? it->ai_canonname : node_;
+    for (; it; it = it->ai_next) {
+        endPoints.emplace_back(it, hostName, service_);
+    }
+    freeaddrinfo(res);
+    return endPoints;
 }
 

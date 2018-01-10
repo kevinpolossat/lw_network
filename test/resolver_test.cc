@@ -13,7 +13,7 @@ public:
 };
 
 TEST_F(ResolverTest, instantiation) {
-    lw_tcp_server::Resolver resolver("localhost", "4242", 42, 43, 44, 45);
+    lw_network::Resolver resolver("localhost", "4242", 42, 43, 44, 45);
     ASSERT_EQ(resolver.Node(), "localhost");
     ASSERT_EQ(resolver.Service(), "4242");
     ASSERT_EQ(resolver.Family(), 42);
@@ -23,7 +23,7 @@ TEST_F(ResolverTest, instantiation) {
 }
 
 TEST_F(ResolverTest, getter_and_setter) {
-    lw_tcp_server::Resolver resolver("localhost", "4242", 42, 43, 44, 45);
+    lw_network::Resolver resolver("localhost", "4242", 42, 43, 44, 45);
 
     resolver.SetNode("127.0.0.1");
     resolver.SetService("8484");

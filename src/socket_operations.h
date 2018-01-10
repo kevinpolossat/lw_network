@@ -31,38 +31,107 @@ using signed_size_type = ssize_t;
 
 static constexpr socket_type invalid_socket = INVALID_SOCKET;
 static constexpr int socket_error = SOCKET_ERROR;
-namespace network {
+namespace lw_network {
 using error_code = int;
 static constexpr error_code no_error = 0;
 
 namespace socket_operations { // Low level socket function defined in according with the os.
 
-socket_type socket(int domain, int type, int protocol, network::error_code &e);
+socket_type socket(int domain, int type, int protocol, lw_network::error_code &e);
 
-void close(socket_type s, network::error_code &e);
-
-template<typename SockLenType>
-void bind(socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
-
-void listen(socket_type s, int backlog, network::error_code &e);
+void close(socket_type s, lw_network::error_code &e);
 
 template<typename SockLenType>
-void connect(socket_type s, const struct sockaddr *addr, std::size_t addrlen, network::error_code &e);
+void bind(socket_type s, const struct sockaddr *addr, std::size_t addrlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    int ret = ::bind(s, addr, static_cast<SockLenType>(addrlen));
+    if (ret == socket_error) {
+        e = errno;
+    }
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
+
+void listen(socket_type s, int backlog, lw_network::error_code &e);
 
 template<typename SockLenType>
-socket_type accept(socket_type s, struct sockaddr *addr, std::size_t *addrlen, network::error_code &e);
-
-signed_size_type recv(socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
-
-signed_size_type send(socket_type s, Buffer *buff, std::size_t size, int flags, network::error_code &e);
+void connect(socket_type s, const struct sockaddr *addr, std::size_t addrlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    int ret = ::connect(s, addr, static_cast<SockLenType>(addrlen));
+    if (ret == socket_error) {
+        e = errno;
+    }
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
 
 template<typename SockLenType>
-void setsockopt(socket_type s, int level, int optname, void const *optval, std::size_t optlen, network::error_code &e);
+socket_type accept(socket_type s, struct sockaddr *addr, std::size_t *addrlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    auto len = addrlen ? static_cast<SockLenType>(*addrlen) : 0;
+    socket_type accepted = ::accept(s, addr, &len);
+    if (accepted == invalid_socket) {
+        e = errno;
+    }
+    if (addrlen) {
+        *addrlen = static_cast<std::size_t>(len);
+    }
+    return accepted;
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+    return 0;
+}
+
+signed_size_type recv(socket_type s, Buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
+
+signed_size_type send(socket_type s, Buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
 
 template<typename SockLenType>
-void getsockopt(socket_type s, int level, int optname, void *optval, std::size_t *optlen, network::error_code &e);
+void setsockopt(
+        socket_type s,
+        int level,
+        int optname,
+        void const *optval,
+        std::size_t optlen,
+        lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    int ret = ::setsockopt(s, level, optname, optval, static_cast<SockLenType>(optlen));
+    if (ret == socket_error) {
+        e = errno;
+    }
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
+
+template<typename SockLenType>
+void getsockopt(socket_type s, int level, int optname, void *optval, std::size_t *optlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    auto len = optlen ? static_cast<SockLenType>(*optlen) : 0;
+    int ret = ::getsockopt(s, level, optname, optval, &len);
+    if (ret == socket_error) {
+        e = errno;
+    }
+    *optlen = static_cast<std::size_t>(len);
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
 
 } // socket_operations
-} // network
+} // lw_network
 
 #endif //LW_TCP_SERVER_SOCKET_DEF_H

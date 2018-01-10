@@ -8,7 +8,7 @@
 #include <exception>
 #include <string>
 
-namespace lw_tcp_server {
+namespace lw_network {
 
     class OpenError: public std::exception {
     public:

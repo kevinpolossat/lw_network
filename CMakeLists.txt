@@ -4,7 +4,6 @@ project(lw_tcp_server CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 file(GLOB_RECURSE SOURCES ./src/*.cc)
 file(GLOB_RECURSE HEADERS ./src/*.h)
@@ -47,3 +46,12 @@ enable_testing()
 add_executable(lw_tcp_server_test ${TEST_SOURCES} ${SOURCES})
 target_link_libraries(lw_tcp_server_test gmock_main)
 add_test(NAME testing_lw_tcp_server_ COMMAND lw_tcp_server_test)
+
+set(EXAMPLE_SOURCES
+        ${SOURCES})
+
+# example
+message(${EXAMPLE_SOURCES})
+add_executable(example example/main.cc)
+target_sources(example PRIVATE ${EXAMPLE_SOURCES})
+target_include_directories(example PRIVATE ./src)

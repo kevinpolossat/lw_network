@@ -3,7 +3,7 @@
 //
 
 #include "lw_network_error.h"
-#include "resolver.h"
+#include "Resolver.h"
 
 lw_network::Resolver::Resolver():
         family_(0), sock_type_(0), protocol_(0), flags_(0) {

@@ -16,7 +16,7 @@
 #define SOCKET_ERROR (-1)
 
 using socket_type = int;
-using Buffer = iovec;
+using io_buffer = iovec;
 using signed_size_type = ssize_t;
 
 #elif defined (_WIN32) || defined (_WIN64)
@@ -91,9 +91,9 @@ socket_type accept(socket_type s, struct sockaddr *addr, std::size_t *addrlen, l
     return 0;
 }
 
-signed_size_type recv(socket_type s, Buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
+signed_size_type recv(socket_type s, io_buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
 
-signed_size_type send(socket_type s, Buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
+signed_size_type send(socket_type s, io_buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
 
 template<typename SockLenType>
 void setsockopt(
@@ -130,6 +130,48 @@ void getsockopt(socket_type s, int level, int optname, void *optval, std::size_t
 #error "unknown platform"
 #endif
 }
+
+template<typename SockLenType>
+void getsockname(socket_type s, struct sockaddr *addr, std::size_t *addrlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    auto len = addrlen ? static_cast<SockLenType>(*addrlen) : 0;
+    int ret = ::getsockname(s, addr, &len);
+    if (ret == socket_error) {
+        e = errno;
+    }
+    *addrlen = static_cast<std::size_t>(len);
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
+
+template<typename SockLenType>
+void getpeername(socket_type s, struct sockaddr *addr, std::size_t *addrlen, lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    auto len = addrlen ? static_cast<SockLenType>(*addrlen) : 0;
+    int ret = ::getpeername(s, addr, &len);
+    if (ret == socket_error) {
+        e = errno;
+    }
+    *addrlen = static_cast<std::size_t>(len);
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
+}
+
+void select(
+        int nfds,
+        fd_set *readfds,
+        fd_set *writefds,
+        fd_set *errorfds,
+        struct timeval *timeout,
+        lw_network::error_code &e);
+
+void nonblocking(socket_type s, bool yes, error_code &e);
 
 } // socket_operations
 } // lw_network

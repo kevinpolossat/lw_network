@@ -2,7 +2,7 @@
 // Created by Kévin POLOSSAT on 01/11/2017.
 //
 
-#include "resolver.h"
+#include "Resolver.h"
 #include "gtest/gtest.h"
 
 class ResolverTest: public ::testing::Test {

@@ -77,8 +77,12 @@ void lw_network::EndPoint::SetSize(std::size_t s) {
     size_ = s;
 }
 
+sockaddr *lw_network::EndPoint::Data() {
+    return reinterpret_cast<sockaddr *>(&addr_);
+}
+
 sockaddr const *lw_network::EndPoint::Data() const {
-    return &addr_;
+    return reinterpret_cast<sockaddr const *>(&addr_);
 }
 
 const lw_network::Protocol &lw_network::EndPoint::protocol() const {
@@ -88,5 +92,3 @@ const lw_network::Protocol &lw_network::EndPoint::protocol() const {
 void lw_network::EndPoint::setProtocol(Protocol const & p) {
     protocol_ = p;
 }
-
-

@@ -28,15 +28,16 @@ public:
     void SetService(const std::string &service_);
     std::size_t Size() const;
     void SetSize(std::size_t s);
+    sockaddr *Data();
     sockaddr const *Data() const;
     Protocol const & protocol() const;
     void setProtocol(Protocol const & p);
 private:
-    std::size_t size_;
+    std::size_t size_ = sizeof(sockaddr_storage);
     std::string hostName_;
     std::string service_;
     Protocol protocol_;
-    sockaddr addr_;
+    sockaddr_storage addr_;
 };
 }
 #endif //LW_TCP_SERVER_ENDPOINT_H

@@ -1,89 +1,54 @@
 //
-// Created by Kévin POLOSSAT on 14/01/2018.
+// Created by Kévin POLOSSAT on 08/01/2018.
 //
 
-#ifndef LW_TCP_SERVER_SOCKET_H
-#define LW_TCP_SERVER_SOCKET_H
+#ifndef LW_TCP_SERVER_BASICSOCKET_H
+#define LW_TCP_SERVER_BASICSOCKET_H
 
-#include <memory>
-#include "BasicSocket.h"
-#include "Reactor.h"
 #include "Buffer.h"
+#include "Protocol.h"
+#include "EndPoint.h"
 
 namespace lw_network {
-class Socket: public BasicSocket {
+class Socket {
+#if defined (__linux__) || defined (__APPLE__)
+    using SockLenType = socklen_t;
+#elif defined (_WIN32) || defined (_WIN64)
+    #error "TODO DEFINE WINDOWS"
+#else
+#error "unknown platform"
+#endif
 public:
-    explicit Socket(Reactor & reactor);
-    ~Socket() = default;
-    Socket(Socket const & other) = default;
-    Socket(Socket && other) = default;
+    Socket(socket_type s = invalid_socket);
+    virtual ~Socket();
 
+    Socket(Socket const & other);
+    Socket(Socket && other);
     Socket & operator = (Socket const & other);
+    Socket & operator = (socket_type s);
     Socket & operator = (Socket && other);
 
-    void close();
-    void async_read_some(Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    void async_read(Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-
-    void async_write_some(Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    void async_write(Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-
+    void open(Protocol const & proto, error_code &e);
+    bool isOpen() const;
+    void close(error_code &e);
+    void bind(EndPoint const & endpoint, error_code &e);
+    void listen(int backlog, error_code &e);
+    void connect(EndPoint const & endPoint, error_code &e);
+    void accept(Socket & socket, error_code &e);
+    void setOption(int level, int optname, void const *optval, std::size_t optlen, error_code &e);
+    void getOption(int level, int optname, void *optval, std::size_t *optlen, error_code &e) const;
+    signed_size_type recv(Buffer & buffer, int flags, error_code &e);
+    signed_size_type send(Buffer & buffer, int flags, error_code &e);
+    signed_size_type recvfrom(EndPoint & endPoint, Buffer & buffer, int flags, error_code &e);
+    signed_size_type sendto(EndPoint const & endPoint, Buffer & buffer, int flags, error_code &e);
+    EndPoint localEndPoint(error_code &e) const;
+    EndPoint remoteEndPoint(error_code &e) const;
+    void nonBlocking(bool yes, error_code &ec);
+    socket_type getImpl() const;
 private:
-    Reactor & reactor_;
-};
-
-// TODO FACTORIZE
-class ReadOperation: public Operation {
-public:
-    ReadOperation(Socket & s, Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    bool handle();
-    void complete();
-private:
-    Socket & s_;
-    error_code ec_;
-    std::size_t nbyte_;
-    Buffer b_;
-    std::function<void(std::size_t nbyte, error_code ec)> completionHandler_;
-};
-
-class WriteOperation: public Operation {
-public:
-    WriteOperation(Socket & s, Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    bool handle();
-    void complete();
-private:
-    Socket & s_;
-    error_code ec_;
-    std::size_t nbyte_;
-    Buffer b_;
-    std::function<void(std::size_t nbyte, error_code ec)> completionHandler_;
-};
-
-class ReadSomeOperation: public Operation {
-public:
-    ReadSomeOperation(Socket & s, Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    bool handle();
-    void complete();
-private:
-    Socket & s_;
-    error_code ec_;
-    std::size_t nbyte_;
-    Buffer b_;
-    std::function<void(std::size_t nbyte, error_code ec)> completionHandler_;
-};
-
-class WriteSomeOperation: public Operation {
-public:
-    WriteSomeOperation(Socket & s, Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
-    bool handle();
-    void complete();
-private:
-    Socket & s_;
-    error_code ec_;
-    std::size_t nbyte_;
-    Buffer b_;
-    std::function<void(std::size_t nbyte, error_code ec)> completionHandler_;
+    socket_type s_;
 };
 }
 
-#endif //LW_TCP_SERVER_SOCKET_H
+
+#endif //LW_TCP_SERVER_BASICSOCKET_H

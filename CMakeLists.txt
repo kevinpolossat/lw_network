@@ -6,12 +6,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
-        ${PROJECT_SOURCE_DIR}/src/BasicSocket.cc
-        ${PROJECT_SOURCE_DIR}/src/BasicSocket.h
         ${PROJECT_SOURCE_DIR}/src/Socket.cc
         ${PROJECT_SOURCE_DIR}/src/Socket.h
-        ${PROJECT_SOURCE_DIR}/src/Connector.cc
-        ${PROJECT_SOURCE_DIR}/src/Connector.h
+        ${PROJECT_SOURCE_DIR}/src/ReactiveSocket.cc
+        ${PROJECT_SOURCE_DIR}/src/ReactiveSocket.h
         ${PROJECT_SOURCE_DIR}/src/Acceptor.cc
         ${PROJECT_SOURCE_DIR}/src/Acceptor.h
         ${PROJECT_SOURCE_DIR}/src/FDSet.cc
@@ -72,7 +70,7 @@ add_executable(lw_tcp_server_test ${TEST_SOURCES} ${SOURCES})
 target_link_libraries(lw_tcp_server_test gmock_main)
 add_test(NAME testing_lw_tcp_server_ COMMAND lw_tcp_server_test)
 
-set(EXAMPLE_SOURCES
+set(EXAMPLE_SERVER_SOURCES
         example/server/Server.cc
         example/server/Server.h
         example/server/Connection.cc
@@ -81,8 +79,27 @@ set(EXAMPLE_SOURCES
         example/server/ConnectionManager.h
         ${SOURCES})
 
-# example
-message(${EXAMPLE_SOURCES})
-add_executable(example example/server/main.cc)
-target_sources(example PRIVATE ${EXAMPLE_SOURCES})
-target_include_directories(example PRIVATE ./src)
+set(EXAMPLE_CLIENT_SOURCES
+        example/client/Client.cc
+        example/client/Client.h
+        ${SOURCES})
+
+# example server
+add_executable(server example/server/main.cc)
+target_sources(server PRIVATE ${EXAMPLE_SERVER_SOURCES})
+target_include_directories(server PRIVATE ./src)
+
+#example client
+add_executable(client example/client/main.cc)
+target_sources(client PRIVATE ${EXAMPLE_CLIENT_SOURCES})
+target_include_directories(client PRIVATE ./src)
+
+# example udplistener
+add_executable(udplistener example/udplistener/main.cc)
+target_include_directories(udplistener PRIVATE ./src)
+target_sources(udplistener PRIVATE ${SOURCES})
+
+#example udpsender
+add_executable(udpsender example/udpsender/main.cc)
+target_include_directories(udpsender PRIVATE ./src)
+target_sources(udpsender PRIVATE ${SOURCES})

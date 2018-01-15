@@ -1,117 +1,143 @@
 //
-// Created by Kévin POLOSSAT on 14/01/2018.
+// Created by Kévin POLOSSAT on 08/01/2018.
 //
 
 #include "Socket.h"
 
-lw_network::Socket::Socket(lw_network::Reactor &reactor): BasicSocket(), reactor_(reactor) {
-    reactor_.registerHandler(this->getImpl(), lw_network::Reactor::read);
-    reactor_.registerHandler(this->getImpl(), lw_network::Reactor::write);
-}
+lw_network::Socket::Socket(socket_type s): s_(s) {}
 
-lw_network::Socket &lw_network::Socket::operator=(const lw_network::Socket &other) {
-    BasicSocket::operator=(other);
-    return *this;
+lw_network::Socket::~Socket() {}
+
+lw_network::Socket::Socket(lw_network::Socket &&other) {
+    s_ = other.s_;
+    other.s_ = invalid_socket;
 }
 
 lw_network::Socket &lw_network::Socket::operator=(lw_network::Socket &&other) {
-    BasicSocket::operator=(other);
+    s_ = other.s_;
+    other.s_ = invalid_socket;
     return *this;
 }
 
-void lw_network::Socket::async_read_some(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
-    reactor_.submit(
-            this->getImpl(),
-            std::make_shared<ReadSomeOperation>(*this, b, completionHandler),
-            lw_network::Reactor::OperationType::read);
+lw_network::Socket::Socket(const lw_network::Socket &other): s_(other.s_) {}
+
+lw_network::Socket &lw_network::Socket::operator=(const lw_network::Socket &other) {
+    s_ = other.s_;
+    return *this;
 }
 
-void lw_network::Socket::async_read(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
-    reactor_.submit(
-            this->getImpl(),
-            std::make_shared<ReadOperation>(*this, b, completionHandler),
-            lw_network::Reactor::OperationType::read);
+lw_network::Socket &lw_network::Socket::operator=(socket_type s) {
+    s_ = s;
+    return *this;
 }
 
-void lw_network::Socket::async_write_some(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
-    reactor_.submit(
-            this->getImpl(),
-            std::make_shared<WriteSomeOperation>(*this, b, completionHandler),
-            lw_network::Reactor::OperationType::write);
+void lw_network::Socket::open(const lw_network::Protocol &proto, error_code &e) {
+    s_ = socket_operations::socket(proto.family(), proto.type(), proto.protocol(), e);
 }
 
-void lw_network::Socket::async_write(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
-    reactor_.submit(
-            this->getImpl(),
-            std::make_shared<WriteOperation>(*this, b, completionHandler),
-            lw_network::Reactor::OperationType::write);
+void lw_network::Socket::close(error_code &e) {
+    socket_operations::close(s_, e);
+    s_ = invalid_socket;
 }
 
-void lw_network::Socket::close() {
-        reactor_.unregisterHandler(this->getImpl(), lw_network::Reactor::read);
-        reactor_.unregisterHandler(this->getImpl(), lw_network::Reactor::write);
-    error_code ec = no_error;
-    BasicSocket::close(ec);
+void lw_network::Socket::bind(const lw_network::EndPoint &endpoint, error_code &e) {
+    socket_operations::bind<SockLenType>(s_, endpoint.Data(), endpoint.Size(), e);
 }
 
-lw_network::ReadOperation::ReadOperation(
-        lw_network::Socket &s,
-        lw_network::Buffer b,
-        std::function<void(std::size_t nbyte, error_code ec)> completionHandler):
-        s_(s), ec_(no_error), nbyte_(0), b_(std::move(b)), completionHandler_(std::move(completionHandler)) {}
+void lw_network::Socket::listen(int backlog, error_code &e) { socket_operations::listen(s_, backlog, e); }
 
-bool lw_network::ReadOperation::handle() {
-    nbyte_ = s_.recv(b_, 0, ec_);
-    return b_.exhausted();
+void lw_network::Socket::connect(const lw_network::EndPoint &endPoint, error_code &e) {
+    socket_operations::connect<SockLenType>(s_, endPoint.Data(), endPoint.Size(), e);
 }
 
-void lw_network::ReadOperation::complete() {
-    completionHandler_(nbyte_, ec_);
+void lw_network::Socket::accept(lw_network::Socket &socket, error_code &e) {
+    EndPoint endPoint;
+    std::size_t size = endPoint.Size();
+    socket = socket_operations::accept<SockLenType>(s_, endPoint.Data(), &size, e);
 }
 
-lw_network::WriteOperation::WriteOperation(
-        lw_network::Socket &s,
-        lw_network::Buffer b,
-        std::function<void(size_t, lw_network::error_code)> completionHandler):
-        s_(s), ec_(no_error), nbyte_(0), b_(std::move(b)), completionHandler_(std::move(completionHandler)) {}
-
-bool lw_network::WriteOperation::handle() {
-    nbyte_ = s_.send(b_, 0, ec_);
-    return b_.exhausted();
+void lw_network::Socket::setOption(int level, int optname, void const *optval, std::size_t optlen, error_code &e) {
+    socket_operations::setsockopt<SockLenType>(s_, level, optname, optval, optlen, e);
 }
 
-void lw_network::WriteOperation::complete() {
-    completionHandler_(nbyte_, ec_);
+void lw_network::Socket::getOption(int level, int optname, void *optval, std::size_t *optlen, error_code &e) const {
+    socket_operations::getsockopt<SockLenType>(s_, level, optname, optval, optlen, e);
 }
 
-lw_network::ReadSomeOperation::ReadSomeOperation(
-        lw_network::Socket &s,
-        lw_network::Buffer b,
-        std::function<void(size_t, lw_network::error_code)> completionHandler):
-        s_(s), ec_(no_error), nbyte_(0), b_(std::move(b)), completionHandler_(std::move(completionHandler)) {
-
+signed_size_type lw_network::Socket::recv(Buffer &buffer, int flags, error_code &e) {
+    io_buffer b = {buffer.Data(), buffer.Size()};
+    auto s = socket_operations::recv(getImpl(), &b, buffer.Size(), flags, e);
+    if (!e) {
+        buffer += s;
+    }
+    return s;
 }
 
-bool lw_network::ReadSomeOperation::handle() {
-    nbyte_ = s_.recv(b_, 0, ec_);
-    return true;
+signed_size_type lw_network::Socket::send(Buffer &buffer, int flags, error_code &e) {
+    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
+    auto s = socket_operations::send(getImpl(), &b, buffer.Size(), flags, e);
+    if (!e) {
+        buffer += s;
+    }
+    return s;
 }
 
-void lw_network::ReadSomeOperation::complete() {
-    completionHandler_(nbyte_, ec_);
+socket_type lw_network::Socket::getImpl() const { return s_; }
+
+lw_network::EndPoint lw_network::Socket::localEndPoint(lw_network::error_code &e) const {
+    EndPoint ep;
+
+    std::size_t s = ep.Size();
+    socket_operations::getsockname<SockLenType>(getImpl(), ep.Data(), &s, e);
+    if (e != no_error) {
+        return EndPoint();
+    }
+    ep.SetSize(s);
+    return ep;
 }
 
-lw_network::WriteSomeOperation::WriteSomeOperation(
-        lw_network::Socket &s,
-        lw_network::Buffer b,
-        std::function<void(size_t, lw_network::error_code)> completionHandler):
-        s_(s), ec_(no_error), nbyte_(0), b_(std::move(b)), completionHandler_(std::move(completionHandler)) {}
+lw_network::EndPoint lw_network::Socket::remoteEndPoint(lw_network::error_code &e) const {
+    EndPoint ep;
 
-bool lw_network::WriteSomeOperation::handle() {
-    nbyte_ = s_.send(b_, 0, ec_);
-    return true;
+    std::size_t s = ep.Size();
+    socket_operations::getpeername<SockLenType>(getImpl(), ep.Data(), &s, e);
+    if (e != no_error) {
+        return EndPoint();
+    }
+    ep.SetSize(s);
+    return ep;
 }
 
-void lw_network::WriteSomeOperation::complete() {
-    completionHandler_(nbyte_, ec_);
+bool lw_network::Socket::isOpen() const { return s_ != invalid_socket; }
+
+void lw_network::Socket::nonBlocking(bool yes, error_code &ec) {
+    socket_operations::nonblocking(getImpl(), yes, ec);
+}
+
+signed_size_type lw_network::Socket::recvfrom(
+        lw_network::EndPoint & endPoint,
+        lw_network::Buffer &buffer,
+        int flags,
+        lw_network::error_code &e) {
+    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
+    std::size_t size = endPoint.Size();
+    auto s = socket_operations::recvfrom(getImpl(), &b, flags, endPoint.Data(), &size, e);
+    endPoint.SetSize(size);
+    if (!e) {
+        buffer += s;
+    }
+    return s;
+}
+
+signed_size_type lw_network::Socket::sendto(
+        lw_network::EndPoint const & endPoint,
+        lw_network::Buffer &buffer,
+        int flags,
+        lw_network::error_code &e) {
+    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
+    auto s = socket_operations::sendto(this->getImpl(), &b, flags, endPoint.Data(), endPoint.Size(), e);
+    if (!e) {
+        buffer += s;
+    }
+    return s;
 }

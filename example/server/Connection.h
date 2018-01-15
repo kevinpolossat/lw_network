@@ -5,13 +5,15 @@
 #ifndef LW_TCP_SERVER_CONNECTION_H
 #define LW_TCP_SERVER_CONNECTION_H
 
-#include "Socket.h"
+#include <array>
+#include <string>
+#include "ReactiveSocket.h"
 
 class ConnectionManager;
 
 class Connection: public std::enable_shared_from_this<Connection> {
 public:
-    Connection(lw_network::Socket s, ConnectionManager & cm);
+    Connection(lw_network::ReactiveSocket s, ConnectionManager & cm);
     Connection(Connection const & other) = delete;
     Connection & operator = (Connection const & other) = delete;
     void start();
@@ -20,7 +22,7 @@ private:
     void doRead_();
     void doWrite_();
 private:
-    lw_network::Socket s_;
+    lw_network::ReactiveSocket s_;
     ConnectionManager &cm_;
     std::array<char, 1024> bufferRead_;
     std::string bufferWrite_;

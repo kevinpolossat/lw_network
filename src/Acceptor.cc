@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Acceptor.h"
 
-lw_network::Acceptor::Acceptor(lw_network::Reactor &reactor): BasicSocket(), reactor_(reactor) {
+lw_network::Acceptor::Acceptor(lw_network::Reactor &reactor): Socket(), reactor_(reactor) {
     reactor_.registerHandler(this->getImpl(), lw_network::Reactor::OperationType::read);
 }
 
@@ -13,7 +13,7 @@ lw_network::Acceptor::~Acceptor() {
     reactor_.unregisterHandler(this->getImpl(), Reactor::OperationType::read);
 }
 
-void lw_network::Acceptor::asyncAccept(std::function<void(lw_network::Socket, error_code)> completionHandler) {
+void lw_network::Acceptor::asyncAccept(std::function<void(lw_network::ReactiveSocket, error_code)> completionHandler) {
     reactor_.submit(
             this->getImpl(),
             std::make_shared<AcceptOperation>(
@@ -36,7 +36,7 @@ bool lw_network::AcceptOperation::handle() {
 }
 
 lw_network::AcceptOperation::AcceptOperation(
-        std::function<void(lw_network::Socket, lw_network::error_code)> completionHandler,
+        std::function<void(lw_network::ReactiveSocket, lw_network::error_code)> completionHandler,
         lw_network::Acceptor &acceptor):
         completionHandler_(std::move(completionHandler)),
         acceptor_(acceptor),

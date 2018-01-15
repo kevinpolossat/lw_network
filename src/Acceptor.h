@@ -8,13 +8,13 @@
 #include <functional>
 #include <memory>
 #include "socket_operations.h"
-#include "Socket.h"
+#include "ReactiveSocket.h"
 #include "Reactor.h"
 #include "Operation.h"
 
 namespace lw_network {
 
-class Acceptor: public lw_network::BasicSocket {
+class Acceptor: public lw_network::Socket {
 public:
     explicit Acceptor(Reactor & reactor);
     Acceptor(Acceptor const & other) = delete;
@@ -22,7 +22,7 @@ public:
     ~Acceptor();
     Acceptor & operator = (Acceptor const & other) = delete;
     Acceptor & operator = (Acceptor && other) = delete;
-    void asyncAccept(std::function<void(Socket, error_code)> completionHandler);
+    void asyncAccept(std::function<void(ReactiveSocket, error_code)> completionHandler);
     Reactor & reactor();
 private:
     Reactor &reactor_;
@@ -30,13 +30,13 @@ private:
 
 class AcceptOperation: public Operation {
 public:
-    AcceptOperation(std::function<void(lw_network::Socket, error_code)> completionHandler, lw_network::Acceptor & acceptor);
+    AcceptOperation(std::function<void(lw_network::ReactiveSocket, error_code)> completionHandler, lw_network::Acceptor & acceptor);
     void complete();
     bool handle();
 private:
-    std::function<void(Socket, error_code)> completionHandler_;
+    std::function<void(ReactiveSocket, error_code)> completionHandler_;
     Acceptor & acceptor_;
-    Socket s_;
+    ReactiveSocket s_;
     error_code ec_;
 };
 }

@@ -58,7 +58,7 @@ void Server::run() {
 
 void Server::doAccept() {
     acceptor_.asyncAccept(
-            [this](lw_network::Socket peer, lw_network::error_code ec) {
+            [this](lw_network::ReactiveSocket peer, lw_network::error_code ec) {
                 char remoteIP[INET6_ADDRSTRLEN];
                 lw_network::error_code e = lw_network::no_error;
                 auto peerPoint = peer.remoteEndPoint(e);

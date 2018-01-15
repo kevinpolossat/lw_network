@@ -7,7 +7,7 @@
 #include "Connection.h"
 #include "ConnectionManager.h"
 
-Connection::Connection(lw_network::Socket s, ConnectionManager &cm): s_(std::move(s)), cm_(cm) {}
+Connection::Connection(lw_network::ReactiveSocket s, ConnectionManager &cm): s_(std::move(s)), cm_(cm) {}
 
 void Connection::start() {
     doRead_();
@@ -31,7 +31,9 @@ void Connection::doRead_() {
             lw_network::Buffer(bufferRead_.data(), bufferRead_.size()),
             [this](std::size_t nbyte, lw_network::error_code ec) {
                 this->bufferWrite_.assign(this->bufferRead_.data(), nbyte);
-                this->doWrite_();
+                std::cout << "[" << this->bufferWrite_ << "]" << std::endl;
+                doRead_();
+//                this->doWrite_();
             }
     );
 }

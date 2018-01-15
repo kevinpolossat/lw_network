@@ -6,7 +6,7 @@
 #define LW_TCP_SERVER_CONNECTIONMANAGER_H
 
 #include <vector>
-#include "Socket.h"
+#include "ReactiveSocket.h"
 #include "Connection.h"
 
 class ConnectionManager {

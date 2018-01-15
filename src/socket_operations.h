@@ -95,6 +95,22 @@ signed_size_type recv(socket_type s, io_buffer *buff, std::size_t size, int flag
 
 signed_size_type send(socket_type s, io_buffer *buff, std::size_t size, int flags, lw_network::error_code &e);
 
+signed_size_type recvfrom(
+        socket_type s,
+        io_buffer *buff,
+        unsigned int flags,
+        struct sockaddr *to,
+        std::size_t *fromlen,
+        error_code &e);
+
+signed_size_type sendto(
+        socket_type s,
+        io_buffer *buff,
+        unsigned int flags,
+        const struct sockaddr *to,
+        std::size_t tolen,
+        error_code & e);
+
 template<typename SockLenType>
 void setsockopt(
         socket_type s,

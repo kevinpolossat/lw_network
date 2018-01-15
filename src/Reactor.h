@@ -10,6 +10,7 @@
 #include <memory>
 #include <unordered_map>
 #include <queue>
+#include <mutex>
 #include "socket_operations.h"
 #include "FDSet.h"
 #include "Operation.h"
@@ -46,11 +47,12 @@ public:
     void submit(socket_type s, Handler handler, lw_network::Reactor::OperationType ot);
 
     void handleEvents();
-
+    void handleEvent(std::vector<std::shared_ptr<Operation>> & completions);
 private:
     static constexpr int maxFdSets = 2;
     std::array<FDSet, maxFdSets> masters_;
     std::array<FDSet, maxFdSets> fdsets_;
+    std::mutex mutex_;
 
     using OperationQueue = std::queue<Handler>;
     using Handlers = std::unordered_map<socket_type, OperationQueue>;

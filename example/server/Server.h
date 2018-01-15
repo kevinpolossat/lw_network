@@ -21,7 +21,7 @@ private:
 private:
     lw_network::Reactor reactor_;
     lw_network::Acceptor acceptor_;
-    lw_network::BasicSocket socket_;
+    lw_network::Socket socket_;
     ConnectionManager manager_;
 
 };

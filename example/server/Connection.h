@@ -17,11 +17,13 @@ public:
     void start();
     void stop();
 private:
-    void doWrite();
+    void doRead_();
+    void doWrite_();
 private:
     lw_network::Socket s_;
     ConnectionManager &cm_;
-    std::string greeting_;
+    std::array<char, 1024> bufferRead_;
+    std::string bufferWrite_;
 };
 
 

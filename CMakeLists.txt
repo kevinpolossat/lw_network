@@ -73,16 +73,16 @@ target_link_libraries(lw_tcp_server_test gmock_main)
 add_test(NAME testing_lw_tcp_server_ COMMAND lw_tcp_server_test)
 
 set(EXAMPLE_SOURCES
-        ${PROJECT_SOURCE_DIR}/example/Server.cc
-        ${PROJECT_SOURCE_DIR}/example/Server.h
-        ${PROJECT_SOURCE_DIR}/example/Connection.cc
-        ${PROJECT_SOURCE_DIR}/example/Connection.h
-        ${PROJECT_SOURCE_DIR}/example/ConnectionManager.cc
-        ${PROJECT_SOURCE_DIR}/example/ConnectionManager.h
+        example/server/Server.cc
+        example/server/Server.h
+        example/server/Connection.cc
+        example/server/Connection.h
+        example/server/ConnectionManager.cc
+        example/server/ConnectionManager.h
         ${SOURCES})
 
 # example
 message(${EXAMPLE_SOURCES})
-add_executable(example example/main.cc)
+add_executable(example example/server/main.cc)
 target_sources(example PRIVATE ${EXAMPLE_SOURCES})
 target_include_directories(example PRIVATE ./src)

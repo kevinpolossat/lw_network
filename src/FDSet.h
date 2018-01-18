@@ -5,8 +5,8 @@
 #ifndef LW_TCP_SERVER_FDSET_H
 #define LW_TCP_SERVER_FDSET_H
 
-#include <sys/select.h>
 #include "socket_operations.h"
+
 namespace lw_network {
 class FDSet {
 public:

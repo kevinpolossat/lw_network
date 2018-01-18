@@ -14,7 +14,7 @@ class Socket {
 #if defined (__linux__) || defined (__APPLE__)
     using SockLenType = socklen_t;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	using SockLenType = int;
 #else
 #error "unknown platform"
 #endif

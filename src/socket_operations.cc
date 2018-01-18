@@ -2,7 +2,6 @@
 // Created by Kévin POLOSSAT on 02/11/2017.
 //
 
-#include <sys/ioctl.h>
 #include "socket_operations.h"
 
 socket_type lw_network::socket_operations::socket(int domain, int type, int protocol, lw_network::error_code &e) {
@@ -13,7 +12,11 @@ socket_type lw_network::socket_operations::socket(int domain, int type, int prot
     }
     return s;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	socket_type s = ::socket(domain, type, protocol);
+	if (s == socket_error) {
+		e = WSAGetLastError();
+	}
+	return s;
 #else
 #error "unknown platform"
 #endif
@@ -27,7 +30,10 @@ void lw_network::socket_operations::close(socket_type s, lw_network::error_code 
         e = errno;
     }
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	int ret = ::closesocket(s);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+	}
 #else
 #error "unknown platform"
 #endif
@@ -40,7 +46,10 @@ void lw_network::socket_operations::listen(socket_type s, int backlog, lw_networ
         e = errno;
     }
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	int ret = ::listen(s, backlog);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+	}
 #else
 #error "unknown platform"
 #endif
@@ -58,7 +67,15 @@ signed_size_type lw_network::socket_operations::recv(
     }
     return ret;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	DWORD recvBufCount = 1;
+	DWORD byteTransfered = 0;
+	DWORD recvFlags = flags;
+	signed_size_type ret = ::WSARecv(s, buff, recvBufCount, &byteTransfered, &recvFlags, 0, 0);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+		return e;
+	}
+	return byteTransfered;
 #else
 #error "unknown platform"
 #endif
@@ -77,7 +94,15 @@ signed_size_type lw_network::socket_operations::send(
     }
     return ret;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	DWORD sendBufCount = 1;
+	DWORD byteTransfered = 0;
+	DWORD sendFlags = flags;
+	signed_size_type ret = ::WSASend(s, buff, sendBufCount, &byteTransfered, sendFlags, 0, 0);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+		return e;
+	}
+	return byteTransfered;
 #else
 #error "unknown platform"
 #endif
@@ -91,9 +116,16 @@ void lw_network::socket_operations::select(int nfds, fd_set *readfds, fd_set *wr
 
 void lw_network::socket_operations::nonblocking(socket_type s, bool yes, error_code &e) {
 #if defined (__linux__) || defined (__APPLE__)
-    e = ::ioctl(s, FIONBIO, &yes);
+	e = ::ioctl(s, FIONBIO, &yes);
+	if (e == socket_error) {
+		e = errno;
+	}
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	DWORD yes_ = static_cast<DWORD>(yes);
+	e = ioctlsocket(s, FIONBIO, &yes_);
+	if (e == socket_error) {
+		e = WSAGetLastError();
+	}
 #else
 #error "unknown platform"
 #endif
@@ -118,7 +150,17 @@ signed_size_type lw_network::socket_operations::recvfrom(
     }
     return ret;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	DWORD recvBufCount = 1;
+	DWORD byteTransfered = 0;
+	DWORD recvFlags = flags;
+	int tmpAddrlen = static_cast<int>(*fromlen);
+	signed_size_type ret = ::WSARecvFrom(s, buff, recvBufCount, &byteTransfered, &recvFlags, from, &tmpAddrlen, 0, 0);
+	*fromlen = static_cast<std::size_t>(tmpAddrlen);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+		return e;
+	}
+	return byteTransfered;
 #else
 #error "unknown platform"
 #endif
@@ -143,7 +185,14 @@ signed_size_type lw_network::socket_operations::sendto(
     }
     return ret;
 #elif defined (_WIN32) || defined (_WIN64)
-    #error "TODO DEFINE WINDOWS"
+	DWORD sendBufCount = 1;
+	DWORD byteTransfered = 0;
+	signed_size_type ret = ::WSASendTo(s, buff, sendBufCount, &byteTransfered, flags, to, tolen, 0, 0);
+	if (ret == socket_error) {
+		e = WSAGetLastError();
+		return e;
+	}
+	return byteTransfered;
 #else
 #error "unknown platform"
 #endif

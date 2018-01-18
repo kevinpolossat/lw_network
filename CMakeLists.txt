@@ -24,6 +24,7 @@ set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/Resolver.h
         ${PROJECT_SOURCE_DIR}/src/socket_operations.cc
         ${PROJECT_SOURCE_DIR}/src/socket_operations.h
+        ${PROJECT_SOURCE_DIR}/src/WinSockInit.h
         ${PROJECT_SOURCE_DIR}/src/Operation.h
         ${PROJECT_SOURCE_DIR}/src/Buffer.cc
         ${PROJECT_SOURCE_DIR}/src/Buffer.h

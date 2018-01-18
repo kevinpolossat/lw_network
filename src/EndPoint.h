@@ -5,10 +5,10 @@
 #ifndef LW_TCP_SERVER_ENDPOINT_H
 #define LW_TCP_SERVER_ENDPOINT_H
 
-#include <netdb.h>
 #include <cstddef>
 #include <string>
 #include "Protocol.h"
+#include "socket_operations.h"
 
 namespace lw_network {
 

@@ -22,6 +22,9 @@ public:
 
     Buffer &operator += (std::size_t nbyte);
     bool exhausted() const;
+
+	io_buffer toIoBuffer() const;
+	io_buffer toIoBuffer();
 private:
     void *data_;
     std::size_t size_;

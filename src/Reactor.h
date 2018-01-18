@@ -5,7 +5,6 @@
 #ifndef LW_TCP_SERVER_REACTOR_H
 #define LW_TCP_SERVER_REACTOR_H
 
-#include <sys/select.h>
 #include <array>
 #include <memory>
 #include <unordered_map>

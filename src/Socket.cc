@@ -65,7 +65,7 @@ void lw_network::Socket::getOption(int level, int optname, void *optval, std::si
 }
 
 signed_size_type lw_network::Socket::recv(Buffer &buffer, int flags, error_code &e) {
-    io_buffer b = {buffer.Data(), buffer.Size()};
+    auto b = buffer.toIoBuffer();
     auto s = socket_operations::recv(getImpl(), &b, buffer.Size(), flags, e);
     if (!e) {
         buffer += s;
@@ -74,8 +74,8 @@ signed_size_type lw_network::Socket::recv(Buffer &buffer, int flags, error_code 
 }
 
 signed_size_type lw_network::Socket::send(Buffer &buffer, int flags, error_code &e) {
-    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
-    auto s = socket_operations::send(getImpl(), &b, buffer.Size(), flags, e);
+	auto b = buffer.toIoBuffer();
+	auto s = socket_operations::send(getImpl(), &b, buffer.Size(), flags, e);
     if (!e) {
         buffer += s;
     }
@@ -119,8 +119,8 @@ signed_size_type lw_network::Socket::recvfrom(
         lw_network::Buffer &buffer,
         int flags,
         lw_network::error_code &e) {
-    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
-    std::size_t size = endPoint.Size();
+	auto b = buffer.toIoBuffer();
+	std::size_t size = endPoint.Size();
     auto s = socket_operations::recvfrom(getImpl(), &b, flags, endPoint.Data(), &size, e);
     endPoint.SetSize(size);
     if (!e) {
@@ -134,8 +134,8 @@ signed_size_type lw_network::Socket::sendto(
         lw_network::Buffer &buffer,
         int flags,
         lw_network::error_code &e) {
-    io_buffer b = {const_cast<void *>(buffer.Data()), buffer.Size()};
-    auto s = socket_operations::sendto(this->getImpl(), &b, flags, endPoint.Data(), endPoint.Size(), e);
+	auto b = buffer.toIoBuffer();
+	auto s = socket_operations::sendto(this->getImpl(), &b, flags, endPoint.Data(), endPoint.Size(), e);
     if (!e) {
         buffer += s;
     }

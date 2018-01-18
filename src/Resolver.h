@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <string>
-#include <netdb.h>
 #include <functional>
 #include "EndPoint.h"
 

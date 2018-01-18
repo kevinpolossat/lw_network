@@ -2,7 +2,14 @@
 // Created by Kévin POLOSSAT on 14/01/2018.
 //
 
+#if defined (__linux__) || defined (__APPLE__)
 #include <arpa/inet.h>
+#elif defined (_WIN32) || defined (_WIN64)
+#include <WS2tcpip.h>
+#else
+#error "unknown platform"
+#endif
+
 #include <memory>
 #include <iostream>
 #include "Server.h"
@@ -62,12 +69,26 @@ void Server::doAccept() {
                 char remoteIP[INET6_ADDRSTRLEN];
                 lw_network::error_code e = lw_network::no_error;
                 auto peerPoint = peer.remoteEndPoint(e);
-                std::cout << "new connection from "
-                          << inet_ntop(
-                                  peerPoint.Data()->sa_family,
-                                  this->get_in_addr_(peerPoint.Data()),
-                                  remoteIP,
-                                  INET6_ADDRSTRLEN)
+
+#if defined (__linux__) || defined (__APPLE__)
+				auto *out = inet_ntop(
+					peerPoint.Data()->sa_family,
+					this->get_in_addr_(peerPoint.Data()),
+					remoteIP,
+					INET6_ADDRSTRLEN);
+#elif defined (_WIN32) || defined (_WIN64)
+				auto *out = InetNtop(
+					peerPoint.Data()->sa_family,
+					this->get_in_addr_(peerPoint.Data()),
+					remoteIP,
+					INET6_ADDRSTRLEN);
+#else
+#error "unknown platform"
+#endif
+
+
+				std::cout << "new connection from "
+                          << out 
                           << std::endl;
                 manager_.start(std::make_shared<Connection>(std::move(peer), manager_));
                 this->doAccept();

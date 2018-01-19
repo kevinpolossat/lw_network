@@ -41,7 +41,7 @@ bool lw_network::Buffer::exhausted() const {
 
 io_buffer lw_network::Buffer::toIoBuffer() const {
 #if defined (__linux__) || defined (__APPLE__)
-	return;
+	return io_buffer{const_cast<void *>(this->Data()), this->Size()};
 #elif defined (_WIN32) || defined (_WIN64)
 	return io_buffer{ this->Size(), static_cast<char *>(const_cast<void *>(this->Data())) };
 #else
@@ -52,7 +52,7 @@ io_buffer lw_network::Buffer::toIoBuffer() const {
 
 io_buffer lw_network::Buffer::toIoBuffer() {
 #if defined (__linux__) || defined (__APPLE__)
-	return { buffer.Data(), buffer.Size() };
+    return io_buffer{this->Data(), this->Size()};
 #elif defined (_WIN32) || defined (_WIN64)
 	return io_buffer{ this->Size(), static_cast<char *>(this->Data()) };
 #else

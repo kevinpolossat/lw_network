@@ -205,6 +205,15 @@ void select(
 
 void nonblocking(socket_type s, bool yes, error_code &e);
 
+void getnameinfo(const struct sockaddr *addr,
+				 socklen_t addrlen,
+				 char *host,
+				 std::size_t hostlen,
+				 char *serv,
+				 std::size_t servlen,
+				 int flags,
+				 lw_network::error_code &e);
+
 } // socket_operations
 } // lw_network
 

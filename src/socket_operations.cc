@@ -197,3 +197,20 @@ signed_size_type lw_network::socket_operations::sendto(
 #error "unknown platform"
 #endif
 }
+
+void lw_network::socket_operations::getnameinfo(const struct sockaddr *addr, socklen_t addrlen, char *host,
+                                                std::size_t hostlen, char *serv, std::size_t servlen, int flags,
+                                                lw_network::error_code &e) {
+#if defined (__linux__) || defined (__APPLE__)
+    e = getnameinfo(addr, addrlen, host, hostlen, serv, servlen, flags);
+#elif defined (_WIN32) || defined (_WIN64)
+    int error = ::getnameinfo(addr, static_cast<socklen_t>(addrlen),
+      host, static_cast<DWORD>(hostlen),
+      serv, static_cast<DWORD>(servlen), flags);
+	if (error) {
+		e = WSAGetLastError();
+	}
+#else
+#error "unknown platform"
+#endif
+}

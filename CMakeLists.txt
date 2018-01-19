@@ -67,7 +67,8 @@ set_target_properties(lw_tcp_server_static PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(lw_tcp_server_shared PROPERTIES LINKER_LANGUAGE CXX)
 
 enable_testing()
-add_executable(lw_tcp_server_test ${TEST_SOURCES} ${SOURCES})
+add_executable(lw_tcp_server_test ${TEST_SOURCES})
+target_sources(lw_tcp_server_test PRIVATE ${SOURCES})
 target_link_libraries(lw_tcp_server_test gmock_main)
 add_test(NAME testing_lw_tcp_server_ COMMAND lw_tcp_server_test)
 

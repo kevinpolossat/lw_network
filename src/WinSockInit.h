@@ -9,6 +9,7 @@
 #pragma comment(lib, "wsock32.lib")
 #pragma comment(lib, "ws2_32.lib")
 
+namespace lw_network {
 class WinSockInit {
 public:
 	WinSockInit() {
@@ -19,9 +20,8 @@ public:
 		WSACleanup();
 	}
 };
-
+}
 static const WinSockInit wsaInit;
-
 #endif //defined (_WIN32) || defined (_WIN64)
 
 #endif //WINSOCK_INIT_H_

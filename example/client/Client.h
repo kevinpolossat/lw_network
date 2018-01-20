@@ -12,7 +12,7 @@
 
 class Client {
 public:
-    void start(std::string const & host = "127.0.0.1", std::string const & port = "4242");
+    void start(std::string const & host = "localhost", std::string const & port = "27015");
 private:
     bool connect_(std::string const & host, std::string const & port);
     lw_network::Socket s_;

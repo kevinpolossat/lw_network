@@ -108,3 +108,19 @@ std::string lw_network::EndPoint::PortStr() const {
             e);
     return std::string(servstr);
 }
+
+std::string lw_network::EndPoint::HostNameStr() const {
+	char hoststr[NI_MAXHOST];
+	char servstr[NI_MAXSERV];
+	auto e = lw_network::no_error;
+	socket_operations::getnameinfo(
+		this->Data(),
+		this->Size(),
+		hoststr,
+		sizeof(hoststr),
+		servstr,
+		sizeof(servstr),
+		NI_NUMERICHOST | NI_NUMERICSERV,
+		e);
+	return std::string(hoststr);
+}

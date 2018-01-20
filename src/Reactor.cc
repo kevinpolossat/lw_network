@@ -47,22 +47,26 @@ void lw_network::Reactor::handleEvents() {
 void lw_network::Reactor::handleOperation_(
         lw_network::Reactor::OperationType ot,
         std::vector<std::shared_ptr<Operation>> &completions) {
-    for (auto i = 0; i < FD_SETSIZE; ++i) {
+	auto maxSd = fdsets_[ot].maxDescriptor();
+	if (maxSd == invalid_socket) {
+		return ;
+	}
+    for (socket_type i = 0; i < maxSd + 1; ++i) {
         if (fdsets_[ot].isSet(i)) {
             if (!handlers_[ot][i].empty()) {
 //            while (!handlers_[ot][i].empty()) {
-                auto operation = handlers_[ot][i].front();
-                if (operation->handle()) {
+				auto operation = handlers_[ot][i].front();
+				if (operation->handle()) {
                     handlers_[ot][i].pop();
                     completions.push_back(operation);
                 } else {
-                    break;
+					break;
                 }
-//            }
+				//            }
             }
             if (handlers_[ot][i].empty()) {
-                masters_[ot].clear(i);
-            }
+				masters_[ot].clear(i);
+			}
         }
     }
 }
@@ -82,23 +86,27 @@ void lw_network::Reactor::completeOperations_(std::vector<std::shared_ptr<Operat
 }
 
 void lw_network::Reactor::handleEvent(std::vector<std::shared_ptr<Operation>> & completions) {
-    for (auto i = 0; i < maxFdSets; ++i) {
-        fdsets_[i] = masters_[i];
+	socket_type maxSd = invalid_socket;
+	for (auto i = 0; i < maxFdSets; ++i) {
+		fdsets_[i] = masters_[i];
+		if (maxSd == invalid_socket || (masters_[i].maxDescriptor() != invalid_socket && masters_[i].maxDescriptor() > maxSd)) {
+			maxSd = masters_[i].maxDescriptor();
+		}
     }
     auto ec = no_error;
-    lw_network::socket_operations::select(
-            FD_SETSIZE,
+	lw_network::socket_operations::select(
+            maxSd + 1,
             fdsets_[lw_network::Reactor::OperationType::read].data(),
             fdsets_[lw_network::Reactor::OperationType::write].data(),
             0,
             /*TODO add timeout*/0,
             ec);
-    if (ec < lw_network::no_error) {
-        // TODO Handle error
+	if (ec < lw_network::no_error) {
+		// TODO Handle error
         return ;
     }
     for (auto i = 0; i < maxFdSets; ++i) {
-        handleOperation_(static_cast<lw_network::Reactor::OperationType>(i), completions);
-    }
+		handleOperation_(static_cast<lw_network::Reactor::OperationType>(i), completions);
+	}
     completeOperations_(completions);
 }

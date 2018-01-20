@@ -18,10 +18,10 @@
 Server::Server(): reactor_(), acceptor_(reactor_) {
     lw_network::Reactor reactor;
     lw_network::Resolver re;
-    re
-            .SetService("4242")
-            .SetFamily(AF_UNSPEC)
-            .SetSockType(SOCK_STREAM)
+	re
+		.SetService("27015")
+		.SetFamily(AF_UNSPEC)
+		.SetSockType(SOCK_STREAM)
             .SetFlags(AI_PASSIVE);
     int yes = 1;
     lw_network::error_code e = lw_network::no_error;
@@ -29,7 +29,7 @@ Server::Server(): reactor_(), acceptor_(reactor_) {
     for (auto const & endPoint : p) {
         e = lw_network::no_error;
         acceptor_.open(endPoint.protocol(), e);
-        if (e) {
+		if (e) {
             continue;
         }
         acceptor_.setOption(SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int), e);
@@ -38,18 +38,18 @@ Server::Server(): reactor_(), acceptor_(reactor_) {
             acceptor_.close(e);
             continue;
         }
-        break;
+		break;
     }
     if (!acceptor_.isOpen()) {
         std::cout << "FAIL" << std::endl;
         return ;
     }
-    acceptor_.listen(10, e);
+    acceptor_.listen(SOMAXCONN, e);
     if (e) {
         std::cout << "FAIL listen" << std::endl;
         return ;
     }
-    doAccept();
+	doAccept();
 }
 
 void *Server::get_in_addr_(struct sockaddr *sa) {
@@ -64,12 +64,11 @@ void Server::run() {
 }
 
 void Server::doAccept() {
-    acceptor_.asyncAccept(
+	acceptor_.asyncAccept(
             [this](lw_network::ReactiveSocket peer, lw_network::error_code ec) {
                 char remoteIP[INET6_ADDRSTRLEN];
                 lw_network::error_code e = lw_network::no_error;
                 auto peerPoint = peer.remoteEndPoint(e);
-
 #if defined (__linux__) || defined (__APPLE__)
 				auto *out = inet_ntop(
 					peerPoint.Data()->sa_family,

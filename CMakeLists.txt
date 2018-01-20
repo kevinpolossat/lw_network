@@ -106,3 +106,8 @@ target_sources(udplistener PRIVATE ${SOURCES})
 add_executable(udpsender example/udpsender/main.cc)
 target_include_directories(udpsender PRIVATE ./src)
 target_sources(udpsender PRIVATE ${SOURCES})
+
+set_target_properties(server client udplistener udpsender
+						PROPERTIES
+						RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+

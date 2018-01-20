@@ -33,6 +33,7 @@ public:
     Protocol const & protocol() const;
     void setProtocol(Protocol const & p);
     std::string PortStr() const;
+	std::string HostNameStr() const;
 private:
     std::size_t size_ = sizeof(sockaddr_storage);
     std::string hostName_;

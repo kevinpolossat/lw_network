@@ -7,7 +7,7 @@
 #include "Client.h"
 
 void Client::start(std::string const & host, std::string const & port) {
-    auto c = connect_(host, port);
+	auto c = connect_(host, port);
     if (!c) {
         std::cerr << "can't connect to remote host " << host << std::endl;
     }
@@ -25,8 +25,10 @@ void Client::start(std::string const & host, std::string const & port) {
             std::getline(std::cin, input);
             std::cout << "===>" << input << std::endl;
             lw_network::Buffer b(static_cast<void *>(const_cast<char *>(input.data())), input.size());
-            s_.send(b, 0, e);
-            if (e) {
+			std::cout << "ici" << std::endl;
+			s_.send(b, 0, e);
+			std::cout << "out ==> " << e << std::endl;
+			if (e) {
                 perror("send:");
             }
         }
@@ -35,11 +37,11 @@ void Client::start(std::string const & host, std::string const & port) {
 
 bool Client::connect_(std::string const & host, std::string const & port) {
     lw_network::Resolver re;
-    re
-            .SetNode(host)
-            .SetService(port)
-            .SetFamily(AF_UNSPEC)
-            .SetSockType(SOCK_STREAM);
+	re
+		.SetNode(host)
+		.SetService(port)
+		.SetFamily(AF_UNSPEC)
+		.SetSockType(SOCK_STREAM);
     int yes = 1;
     for (auto & endPoint: re.Resolve()) {
         auto e = lw_network::no_error;
@@ -49,7 +51,7 @@ bool Client::connect_(std::string const & host, std::string const & port) {
         }
         s_.connect(endPoint, e);
         if (e) {
-            s_.close(e);
+			s_.close(e);
             continue;
         }
         break;

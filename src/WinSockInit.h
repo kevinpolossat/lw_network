@@ -5,23 +5,18 @@
 
 #include <WinSock2.h>
 #include <WS2tcpip.h>
-
+#include <iostream>
 #pragma comment(lib, "wsock32.lib")
 #pragma comment(lib, "ws2_32.lib")
 
 namespace lw_network {
 class WinSockInit {
 public:
-	WinSockInit() {
-		WSAData wsadata;
-		::WSAStartup(MAKEWORD(2, 2), &wsadata);
-	}
-	~WinSockInit() {
-		WSACleanup();
-	}
+	WinSockInit();
+	~WinSockInit();
 };
+extern const WinSockInit wsaInit;
 }
-static const WinSockInit wsaInit;
 #endif //defined (_WIN32) || defined (_WIN64)
 
 #endif //WINSOCK_INIT_H_

@@ -23,8 +23,10 @@ public:
     void clear(socket_type s);
     void reset();
     bool isSet(socket_type s) const;
+	socket_type maxDescriptor() const;
 private:
     fd_set fdset_;
+	socket_type maxDescriptor_;
 };
 }
 

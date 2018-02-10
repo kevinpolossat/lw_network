@@ -8,7 +8,7 @@
 
 class SSLInit {
 public:
-    ~SSLInit();
+    ~SSLInit() = default;
     static SSLInit &instance();
 private:
     SSLInit();

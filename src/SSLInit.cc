@@ -6,10 +6,6 @@
 #include <openssl/err.h>
 #include "SSLInit.h"
 
-SSLInit::~SSLInit() {
-
-}
-
 SSLInit &SSLInit::instance() {
     static SSLInit instance;
     return instance;

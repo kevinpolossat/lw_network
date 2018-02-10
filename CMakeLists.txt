@@ -33,6 +33,7 @@ set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/WinSockInit.cc
         ${PROJECT_SOURCE_DIR}/src/WinSockInit.h
         ${PROJECT_SOURCE_DIR}/src/Operation.h
+		${PROJECT_SOURCE_DIR}/src/Operation.cc
         ${PROJECT_SOURCE_DIR}/src/Buffer.cc
         ${PROJECT_SOURCE_DIR}/src/Buffer.h
         ${PROJECT_SOURCE_DIR}/src/lw_network_error.h

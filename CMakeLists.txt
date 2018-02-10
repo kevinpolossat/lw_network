@@ -33,7 +33,9 @@ set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/Operation.h
         ${PROJECT_SOURCE_DIR}/src/Buffer.cc
         ${PROJECT_SOURCE_DIR}/src/Buffer.h
-        ${PROJECT_SOURCE_DIR}/src/lw_network_error.h)
+        ${PROJECT_SOURCE_DIR}/src/lw_network_error.h
+		${PROJECT_SOURCE_DIR}/src/SSLInit.cc
+		${PROJECT_SOURCE_DIR}/src/SSLInit.h)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/test/resolver_test.cc)

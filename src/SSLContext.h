@@ -11,6 +11,7 @@
 #include <memory>
 #include <string_view>
 
+namespace lw_network {
 class SSLContext {
 public:
     enum class Method {
@@ -34,21 +35,29 @@ public:
 
 public:
     SSLContext(Method m) throw(std::runtime_error);
-    SSLContext(SSLContext const & other) = delete;
-    SSLContext(SSLContext && other) = delete;
-    SSLContext & operator = (SSLContext const & other) = delete;
-    SSLContext & operator = (SSLContext && other) = delete;
+
+    SSLContext(SSLContext const &other) = delete;
+
+    SSLContext(SSLContext &&other) = delete;
+
+    SSLContext &operator=(SSLContext const &other) = delete;
+
+    SSLContext &operator=(SSLContext &&other) = delete;
 
     void useCertificateFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
+
     void useCertificateChainFile(std::string_view file) throw(std::runtime_error);
+
     void usePrivateKeyFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
+
 private:
     std::shared_ptr<SSL_CTX> ctx_;
 private:
-    using SSLMethodBuilder = const SSL_METHOD * (*)();
+    using SSLMethodBuilder = const SSL_METHOD *(*)();
     static std::array<SSLMethodBuilder, 12> const methodBuilder_;
+
     bool checkPrivateKey_();
 };
-
+}
 
 #endif //LW_TCP_SERVER_SSLCONTEXT_H

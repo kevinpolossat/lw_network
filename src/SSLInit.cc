@@ -6,12 +6,12 @@
 #include <openssl/err.h>
 #include "SSLInit.h"
 
-SSLInit &SSLInit::instance() {
+lw_network::SSLInit &lw_network::SSLInit::instance() {
     static SSLInit instance;
     return instance;
 }
 
-SSLInit::SSLInit() {
+lw_network::SSLInit::SSLInit() {
     ::SSL_load_error_strings();
     ::OpenSSL_add_ssl_algorithms();
 }

@@ -22,28 +22,28 @@ lw_network::ReactiveSocket &lw_network::ReactiveSocket::operator=(lw_network::Re
 void lw_network::ReactiveSocket::async_read_some(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
     reactor_.submit(
             this->getImpl(),
-            std::make_shared<ReadSomeOperation>(*this, b, completionHandler),
+            std::make_shared<lw_network::ReadSomeOperation>(*this, b, completionHandler),
             lw_network::Reactor::OperationType::read);
 }
 
 void lw_network::ReactiveSocket::async_read(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
     reactor_.submit(
             this->getImpl(),
-            std::make_shared<ReadOperation>(*this, b, completionHandler),
+            std::make_shared<lw_network::ReadOperation>(*this, b, completionHandler),
             lw_network::Reactor::OperationType::read);
 }
 
 void lw_network::ReactiveSocket::async_write_some(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
     reactor_.submit(
             this->getImpl(),
-            std::make_shared<WriteSomeOperation>(*this, b, completionHandler),
+            std::make_shared<lw_network::WriteSomeOperation>(*this, b, completionHandler),
             lw_network::Reactor::OperationType::write);
 }
 
 void lw_network::ReactiveSocket::async_write(Buffer b, std::function<void(size_t, lw_network::error_code)> completionHandler) {
     reactor_.submit(
             this->getImpl(),
-            std::make_shared<WriteOperation>(*this, b, completionHandler),
+            std::make_shared<lw_network::WriteOperation>(*this, b, completionHandler),
             lw_network::Reactor::OperationType::write);
 }
 

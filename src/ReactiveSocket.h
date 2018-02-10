@@ -9,7 +9,7 @@
 #include "Socket.h"
 #include "Reactor.h"
 #include "Buffer.h"
-
+#include "Operation.h"
 namespace lw_network {
 class ReactiveSocket: public Socket {
 public:
@@ -84,6 +84,7 @@ private:
     Buffer b_;
     std::function<void(std::size_t nbyte, error_code ec)> completionHandler_;
 };
+
 }
 
 #endif //LW_TCP_SERVER_SOCKET_H

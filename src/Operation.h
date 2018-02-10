@@ -7,13 +7,16 @@
 
 
 #include <functional>
+#include "Buffer.h"
 
+namespace lw_network {
 class Operation {
 public:
     virtual ~Operation() = default;
     virtual void complete() = 0;
     virtual bool handle() = 0;
 };
+}
 
 
 #endif //LW_TCP_SERVER_OPERATION_H

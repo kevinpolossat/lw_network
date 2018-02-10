@@ -5,6 +5,8 @@ project(lw_tcp_server CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(OpenSSL REQUIRED)
+
 if (NOT LW_NETWORK_SHARED_BUILD AND NOT LW_NETWORK_STATIC_BUILD)
 	set(LW_NETWORK_SHARED_BUILD true)
 endif (NOT LW_NETWORK_SHARED_BUILD AND NOT LW_NETWORK_STATIC_BUILD)
@@ -64,18 +66,24 @@ endif (LW_NETWORK_BUILD_TEST)
 include_directories(./src)
 
 # this is the "object library" target: compiles the sources only once
-add_library(LIB_OBJECT OBJECT ${SOURCES})
+#add_library(LIB_OBJECT OBJECT ${SOURCES})
 
 # shared libraries need PIC
-set_property(TARGET ${objlib} PROPERTY POSITION_INDEPENDENT_CODE 1)
-
+#set_property(TARGET ${objlib} PROPERTY POSITION_INDEPENDENT_CODE 1)
+#message("hello ${OPENSSL_LIBRARIES} and ${OPENSSL_INCLUDE_DIR}")
 if (LW_NETWORK_SHARED_BUILD)
-	add_library(lw_tcp_server_shared SHARED $<TARGET_OBJECTS:LIB_OBJECT>)
+#	add_library(lw_tcp_server_shared SHARED $<TARGET_OBJECTS:LIB_OBJECT>)
+	add_library(lw_tcp_server_shared SHARED ${SOURCES})
+	target_link_libraries(lw_tcp_server_shared PRIVATE ${OPENSSL_LIBRARIES})
+	target_include_directories(lw_tcp_server_shared PRIVATE ${OPENSSL_INCLUDE_DIR})
 	set_target_properties(lw_tcp_server_shared PROPERTIES LINKER_LANGUAGE CXX)
 endif (LW_NETWORK_SHARED_BUILD)
 
 if (LW_NETWORK_STATIC_BUILD)
-	add_library(lw_tcp_server_static STATIC $<TARGET_OBJECTS:LIB_OBJECT>)
+#	add_library(lw_tcp_server_static STATIC $<TARGET_OBJECTS:LIB_OBJECT>)
+	add_library(lw_tcp_server_static STATIC ${SOURCES})
+	target_link_libraries(lw_tcp_server_static PRIVATE ${OPENSSL_LIBRARIES})
+	target_include_directories(lw_tcp_server_static PRIVATE ${OPENSSL_INCLUDE_DIR})
 	set_target_properties(lw_tcp_server_static PROPERTIES LINKER_LANGUAGE CXX)
 endif (LW_NETWORK_STATIC_BUILD)
 

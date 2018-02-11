@@ -19,7 +19,7 @@ public:
     };
 public:
     explicit SSLSocket(lw_network::SSLContext & ctx, socket_type s = invalid_socket);
-    ~SSLSocket();
+    ~SSLSocket() = default;
 
     SSLSocket(SSLSocket const & other);
     SSLSocket(SSLSocket && other);

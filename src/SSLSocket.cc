@@ -8,8 +8,6 @@
 
 lw_network::SSLSocket::SSLSocket(lw_network::SSLContext &ctx, socket_type s): Socket(s), ctx_(ctx), ssl_(nullptr) {}
 
-lw_network::SSLSocket::~SSLSocket() {}
-
 lw_network::SSLSocket::SSLSocket(const lw_network::SSLSocket &other): Socket(other), ctx_(other.ctx_), ssl_(nullptr) {}
 
 lw_network::SSLSocket::SSLSocket(lw_network::SSLSocket &&other): Socket(other), ctx_(other.ctx_), ssl_(nullptr) {}

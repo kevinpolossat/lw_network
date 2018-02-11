@@ -1,0 +1,46 @@
+//
+// Created by Kévin POLOSSAT on 14/01/2018.
+//
+
+#include "ReactiveSocketBase.h"
+
+
+template<typename T>
+void lw_network::ReactiveSocketBase<T>::async_read_some(
+        lw_network::Buffer b,
+        std::function<void(std::size_t nbyte, lw_network::error_code ec)> completionHandler) {
+    reactor_.submit(
+            this->getImpl(),
+            std::make_shared<lw_network::ReadSomeOperation<T>>(*this, b, completionHandler),
+            lw_network::Reactor::OperationType::read);
+}
+
+template<typename T>
+void lw_network::ReactiveSocketBase<T>::async_read(
+        lw_network::Buffer b,
+        std::function<void(size_t, lw_network::error_code)> completionHandler) {
+    reactor_.submit(
+            this->getImpl(),
+            std::make_shared<lw_network::ReadOperation<T>>(*this, b, completionHandler),
+            lw_network::Reactor::OperationType::read);
+}
+
+template<typename T>
+void lw_network::ReactiveSocketBase<T>::async_write_some(
+        lw_network::Buffer b,
+        std::function<void(size_t, lw_network::error_code)> completionHandler) {
+    reactor_.submit(
+            this->getImpl(),
+            std::make_shared<lw_network::WriteSomeOperation<T>>(*this, b, completionHandler),
+            lw_network::Reactor::OperationType::write);
+}
+
+template<typename T>
+void lw_network::ReactiveSocketBase<T>::async_write(
+        lw_network::Buffer b,
+        std::function<void(size_t, lw_network::error_code)> completionHandler) {
+    reactor_.submit(
+            this->getImpl(),
+            std::make_shared<lw_network::WriteOperation<T>>(*this, b, completionHandler),
+            lw_network::Reactor::OperationType::write);
+}

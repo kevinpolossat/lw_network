@@ -14,10 +14,10 @@ endif (NOT LW_NETWORK_SHARED_BUILD AND NOT LW_NETWORK_STATIC_BUILD)
 set(SOURCES
         ${PROJECT_SOURCE_DIR}/src/Socket.cc
         ${PROJECT_SOURCE_DIR}/src/Socket.h
-        ${PROJECT_SOURCE_DIR}/src/ReactiveSocket.cc
-        ${PROJECT_SOURCE_DIR}/src/ReactiveSocket.h
-        ${PROJECT_SOURCE_DIR}/src/Acceptor.cc
-        ${PROJECT_SOURCE_DIR}/src/Acceptor.h
+		${PROJECT_SOURCE_DIR}/src/ReactiveSocketBase.icc
+		${PROJECT_SOURCE_DIR}/src/ReactiveSocketBase.h
+		${PROJECT_SOURCE_DIR}/src/AcceptorBase.icc
+		${PROJECT_SOURCE_DIR}/src/AcceptorBase.h
         ${PROJECT_SOURCE_DIR}/src/FDSet.cc
         ${PROJECT_SOURCE_DIR}/src/FDSet.h
         ${PROJECT_SOURCE_DIR}/src/EndPoint.cc
@@ -79,6 +79,7 @@ if (LW_NETWORK_SHARED_BUILD)
 	target_link_libraries(lw_tcp_server_shared PRIVATE ${OPENSSL_LIBRARIES})
 	target_include_directories(lw_tcp_server_shared PRIVATE ${OPENSSL_INCLUDE_DIR})
 	set_target_properties(lw_tcp_server_shared PROPERTIES LINKER_LANGUAGE CXX)
+    set(LW_NETWORK_LIBRARY lw_tcp_server_shared)
 endif (LW_NETWORK_SHARED_BUILD)
 
 if (LW_NETWORK_STATIC_BUILD)
@@ -87,6 +88,7 @@ if (LW_NETWORK_STATIC_BUILD)
 	target_link_libraries(lw_tcp_server_static PRIVATE ${OPENSSL_LIBRARIES})
 	target_include_directories(lw_tcp_server_static PRIVATE ${OPENSSL_INCLUDE_DIR})
 	set_target_properties(lw_tcp_server_static PROPERTIES LINKER_LANGUAGE CXX)
+	set(LW_NETWORK_LIBRARY lw_tcp_server_static)
 endif (LW_NETWORK_STATIC_BUILD)
 
 if (LW_NETWORK_BUILD_TEST)
@@ -104,33 +106,33 @@ if (LW_NETWORK_EXAMPLE)
 	        example/server/Connection.cc
 	        example/server/Connection.h
 	        example/server/ConnectionManager.cc
-	        example/server/ConnectionManager.h
-	        ${SOURCES})
+	        example/server/ConnectionManager.h)
 
 	set(EXAMPLE_CLIENT_SOURCES
 	        example/client/Client.cc
-	        example/client/Client.h
-	        ${SOURCES})
+	        example/client/Client.h)
 
 	# example server
 	add_executable(server example/server/main.cc)
 	target_sources(server PRIVATE ${EXAMPLE_SERVER_SOURCES})
 	target_include_directories(server PRIVATE ./src)
+	target_link_libraries(server PRIVATE ${LW_NETWORK_LIBRARY})
 
 	#example client
 	add_executable(client example/client/main.cc)
 	target_sources(client PRIVATE ${EXAMPLE_CLIENT_SOURCES})
 	target_include_directories(client PRIVATE ./src)
+	target_link_libraries(client PRIVATE ${LW_NETWORK_LIBRARY})
 
 	# example udplistener
 	add_executable(udplistener example/udplistener/main.cc)
 	target_include_directories(udplistener PRIVATE ./src)
-	target_sources(udplistener PRIVATE ${SOURCES})
+	target_link_libraries(udplistener PRIVATE ${LW_NETWORK_LIBRARY})
 
 	#example udpsender
 	add_executable(udpsender example/udpsender/main.cc)
 	target_include_directories(udpsender PRIVATE ./src)
-	target_sources(udpsender PRIVATE ${SOURCES})
+	target_link_libraries(udpsender PRIVATE ${LW_NETWORK_LIBRARY})
 
 	set_target_properties(server client udplistener udpsender
 							PROPERTIES

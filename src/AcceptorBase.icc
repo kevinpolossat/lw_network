@@ -1,0 +1,17 @@
+//
+// Created by Kévin POLOSSAT on 19/11/2017.
+//
+
+#include <iostream>
+#include "AcceptorBase.h"
+
+template<typename T>
+void lw_network::AcceptorBase<T>::asyncAccept(
+        std::function<void(lw_network::ReactiveSocketBase<T>, lw_network::error_code)> completionHandler) {
+    reactor_.submit(
+            this->getImpl(),
+            std::make_shared<AcceptOperation<T>>(
+            completionHandler,
+                    *this),
+            Reactor::OperationType::read);
+}

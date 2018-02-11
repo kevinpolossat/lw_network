@@ -7,7 +7,7 @@
 
 #include <array>
 #include <string>
-#include "ReactiveSocket.h"
+#include "ReactiveSocketBase.h"
 
 class ConnectionManager;
 

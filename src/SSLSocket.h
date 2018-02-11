@@ -26,6 +26,7 @@ public:
     SSLSocket & operator = (SSLSocket const & other);
     SSLSocket & operator = (SSLSocket && other);
 
+    void close(error_code &e);
     void connect(EndPoint const & endPoint, error_code &e);
     void accept(Socket & socket, error_code &e);
 

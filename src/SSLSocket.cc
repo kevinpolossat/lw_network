@@ -90,3 +90,13 @@ void lw_network::SSLSocket::initSession(error_code &e) {
         SSL_set_fd(ssl_.get(), this->getImpl());
     }
 }
+
+void lw_network::SSLSocket::close(lw_network::error_code &e) {
+    e = SSL_shutdown(ssl_.get());
+    if (e == -1) {
+        e = ERR_get_error();
+        return ;
+    }
+    Socket::close(e);
+    ssl_.reset();
+}

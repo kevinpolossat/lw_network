@@ -18,7 +18,7 @@ template<typename T = Socket>
 class ReactiveSocketBase : public T {
     static_assert(std::is_base_of<T, Socket>::value, "Socket base should be a derived class of Socket");
 public:
-    explicit ReactiveSocketBase(Reactor &reactor) : Socket(), reactor_(reactor) {
+    explicit ReactiveSocketBase(Reactor &reactor) : T(), reactor_(reactor) {
         reactor_.registerHandler(this->getImpl(), lw_network::Reactor::read);
         reactor_.registerHandler(this->getImpl(), lw_network::Reactor::write);
     }

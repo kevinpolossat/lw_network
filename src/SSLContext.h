@@ -36,13 +36,13 @@ public:
 public:
     SSLContext(Method m) throw(std::runtime_error);
 
-    SSLContext(SSLContext const &other) = delete;
+    SSLContext(SSLContext const &other);
 
-    SSLContext(SSLContext &&other) = delete;
+    SSLContext(SSLContext &&other);
 
-    SSLContext &operator=(SSLContext const &other) = delete;
+    SSLContext &operator=(SSLContext const &other);
 
-    SSLContext &operator=(SSLContext &&other) = delete;
+    SSLContext &operator=(SSLContext &&other);
 
     void useCertificateFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
 
@@ -50,6 +50,7 @@ public:
 
     void usePrivateKeyFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
 
+    operator SSL_CTX*() const;
 private:
     std::shared_ptr<SSL_CTX> ctx_;
 private:

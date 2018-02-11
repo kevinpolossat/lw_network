@@ -62,3 +62,21 @@ void lw_network::SSLContext::usePrivateKeyFile(std::string_view file, lw_network
 bool lw_network::SSLContext::checkPrivateKey_() {
     return SSL_CTX_check_private_key(ctx_.get()) != 0;
 }
+
+lw_network::SSLContext::SSLContext(const lw_network::SSLContext &other): ctx_(other.ctx_) {}
+
+lw_network::SSLContext::SSLContext(lw_network::SSLContext &&other): ctx_(std::move(other.ctx_)) {}
+
+lw_network::SSLContext &lw_network::SSLContext::operator=(const lw_network::SSLContext &other) {
+    ctx_ = other.ctx_;
+    return *this;
+}
+
+lw_network::SSLContext &lw_network::SSLContext::operator=(lw_network::SSLContext &&other) {
+    ctx_ = std::move(other.ctx_);
+    return *this;
+}
+
+lw_network::SSLContext::operator SSL_CTX *() const {
+    return ctx_.get();
+}

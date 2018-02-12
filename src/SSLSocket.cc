@@ -100,3 +100,11 @@ void lw_network::SSLSocket::close(lw_network::error_code &e) {
     Socket::close(e);
     ssl_.reset();
 }
+
+signed_size_type lw_network::SSLSocket::recv(lw_network::Buffer &buffer, int flags, lw_network::error_code &e) {
+    return this->read(buffer, e);
+}
+
+signed_size_type lw_network::SSLSocket::send(lw_network::Buffer &buffer, int flags, lw_network::error_code &e) {
+    return this->write(buffer, e);
+}

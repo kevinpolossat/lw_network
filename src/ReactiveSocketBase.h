@@ -14,14 +14,13 @@
 
 namespace lw_network {
 
-template<typename T = Socket>
-class ReactiveSocketBase : public T {
-    static_assert(std::is_base_of<T, Socket>::value, "Socket base should be a derived class of Socket");
+template<typename Sock = Socket>
+class ReactiveSocketBase : public Sock {
+    static_assert(std::is_base_of<Socket, Sock>::value, "Socket base should be a derived class of Socket");
 public:
-    explicit ReactiveSocketBase(Reactor &reactor) : T(), reactor_(reactor) {
-        reactor_.registerHandler(this->getImpl(), lw_network::Reactor::read);
-        reactor_.registerHandler(this->getImpl(), lw_network::Reactor::write);
-    }
+    explicit ReactiveSocketBase(Reactor &reactor) : Sock(), reactor_(reactor) { register_(); }
+
+    ReactiveSocketBase(Reactor &reactor, Sock socket): Sock(socket), reactor_(reactor) { register_(); }
 
     ~ReactiveSocketBase() = default;
 
@@ -56,6 +55,12 @@ public:
 
 private:
     Reactor &reactor_;
+
+private:
+    void register_() {
+        reactor_.registerHandler(this->getImpl(), lw_network::Reactor::read);
+        reactor_.registerHandler(this->getImpl(), lw_network::Reactor::write);
+    }
 };
 
 using ReactiveSocket = ReactiveSocketBase<>;

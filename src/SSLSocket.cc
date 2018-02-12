@@ -6,11 +6,14 @@
 #include <openssl/err.h>
 #include "SSLSocket.h"
 
-lw_network::SSLSocket::SSLSocket(lw_network::SSLContext &ctx, socket_type s): Socket(s), ctx_(ctx), ssl_(nullptr) {}
+lw_network::SSLSocket::SSLSocket(
+        lw_network::SSLContext &ctx,
+        lw_network::Socket s):
+        Socket(s), ctx_(ctx), ssl_(nullptr), sslInit_(lw_network::SSLInit::instance()) {}
 
-lw_network::SSLSocket::SSLSocket(const lw_network::SSLSocket &other): Socket(other), ctx_(other.ctx_), ssl_(nullptr) {}
-
-lw_network::SSLSocket::SSLSocket(lw_network::SSLSocket &&other): Socket(other), ctx_(other.ctx_), ssl_(nullptr) {}
+lw_network::SSLSocket::SSLSocket(
+        lw_network::SSLSocket &&other):
+        Socket(other), ctx_(other.ctx_), ssl_(nullptr), sslInit_(lw_network::SSLInit::instance()) {}
 
 lw_network::SSLSocket &lw_network::SSLSocket::operator=(const lw_network::SSLSocket &other) {
     Socket::operator=(other);
@@ -101,10 +104,11 @@ void lw_network::SSLSocket::close(lw_network::error_code &e) {
     ssl_.reset();
 }
 
-signed_size_type lw_network::SSLSocket::recv(lw_network::Buffer &buffer, int flags, lw_network::error_code &e) {
+signed_size_type lw_network::SSLSocket::recv(lw_network::Buffer &buffer, int, lw_network::error_code &e) {
     return this->read(buffer, e);
 }
 
-signed_size_type lw_network::SSLSocket::send(lw_network::Buffer &buffer, int flags, lw_network::error_code &e) {
+signed_size_type lw_network::SSLSocket::send(lw_network::Buffer &buffer, int, lw_network::error_code &e) {
     return this->write(buffer, e);
 }
+

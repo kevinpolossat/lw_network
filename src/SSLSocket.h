@@ -9,6 +9,7 @@
 #include <openssl/ssl.h>
 #include "Socket.h"
 #include "SSLContext.h"
+#include "SSLInit.h"
 
 namespace lw_network {
 class SSLSocket: public Socket {
@@ -18,7 +19,7 @@ public:
         server
     };
 public:
-    explicit SSLSocket(lw_network::SSLContext & ctx, socket_type s = invalid_socket);
+    explicit SSLSocket(lw_network::SSLContext & ctx, Socket s = invalid_socket);
     ~SSLSocket() = default;
 
     SSLSocket(SSLSocket const & other);
@@ -41,6 +42,7 @@ public:
 private:
     std::shared_ptr<SSL> ssl_;
     lw_network::SSLContext ctx_;
+    lw_network::SSLInit & sslInit_;
 };
 }
 

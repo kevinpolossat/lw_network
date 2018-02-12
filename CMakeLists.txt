@@ -41,7 +41,9 @@ set(SOURCES
 		${PROJECT_SOURCE_DIR}/src/SSLContext.cc
 		${PROJECT_SOURCE_DIR}/src/SSLContext.h
 		${PROJECT_SOURCE_DIR}/src/SSLSocket.cc
-		${PROJECT_SOURCE_DIR}/src/SSLSocket.h)
+		${PROJECT_SOURCE_DIR}/src/SSLSocket.h
+		${PROJECT_SOURCE_DIR}/src/SSLReactiveSocket.cc
+		${PROJECT_SOURCE_DIR}/src/SSLReactiveSocket.h)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/test/resolver_test.cc)

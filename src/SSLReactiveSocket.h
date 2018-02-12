@@ -1,0 +1,14 @@
+//
+// Created by Kévin POLOSSAT on 12/02/2018.
+//
+
+#ifndef LW_TCP_SERVER_SSLREACTIVESOCKET_H
+#define LW_TCP_SERVER_SSLREACTIVESOCKET_H
+
+
+class SSLReactiveSocket {
+
+};
+
+
+#endif //LW_TCP_SERVER_SSLREACTIVESOCKET_H

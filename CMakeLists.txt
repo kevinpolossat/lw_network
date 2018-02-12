@@ -136,7 +136,17 @@ if (LW_NETWORK_EXAMPLE)
 	target_include_directories(udpsender PRIVATE ./src)
 	target_link_libraries(udpsender PRIVATE ${LW_NETWORK_LIBRARY})
 
-	set_target_properties(server client udplistener udpsender
-							PROPERTIES
-							RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
+	#example ssl server
+	add_executable(ssl_server example/ssl/server.cc)
+	target_include_directories(ssl_server PRIVATE ./src)
+	target_link_libraries(ssl_server PRIVATE ${LW_NETWORK_LIBRARY})
+
+	#example ssl clientj
+	add_executable(ssl_client example/ssl/client.cc)
+	target_include_directories(ssl_client PRIVATE ./src)
+	target_link_libraries(ssl_client PRIVATE ${LW_NETWORK_LIBRARY})
+
+	set_target_properties(server client udplistener udpsender ssl_server ssl_client
+			PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/example)
 endif (LW_NETWORK_EXAMPLE)

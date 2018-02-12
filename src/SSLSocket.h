@@ -26,9 +26,9 @@ public:
     SSLSocket & operator = (SSLSocket const & other);
     SSLSocket & operator = (SSLSocket && other);
 
-    void close(error_code &e);
-    void connect(EndPoint const & endPoint, error_code &e);
-    void accept(Socket & socket, error_code &e);
+    override void close(error_code &e);
+    override void connect(EndPoint const & endPoint, error_code &e);
+    override void accept(Socket & socket, error_code &e);
 
     void handShake(HandShakeType hst, error_code &e);
     void clientHandShake(error_code &e);

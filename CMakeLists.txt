@@ -141,7 +141,7 @@ if (LW_NETWORK_EXAMPLE)
 	target_include_directories(ssl_server PRIVATE ./src)
 	target_link_libraries(ssl_server PRIVATE ${LW_NETWORK_LIBRARY})
 
-	#example ssl clientj
+	#example ssl client
 	add_executable(ssl_client example/ssl/client.cc)
 	target_include_directories(ssl_client PRIVATE ./src)
 	target_link_libraries(ssl_client PRIVATE ${LW_NETWORK_LIBRARY})

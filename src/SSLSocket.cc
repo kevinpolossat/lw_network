@@ -29,20 +29,6 @@ lw_network::SSLSocket &lw_network::SSLSocket::operator=(lw_network::SSLSocket &&
     return *this;
 }
 
-void lw_network::SSLSocket::connect(const lw_network::EndPoint &endPoint, lw_network::error_code &e) {
-    Socket::connect(endPoint, e);
-    if (e == lw_network::no_error) {
-        initSession(e);
-    }
-}
-
-void lw_network::SSLSocket::accept(lw_network::Socket &socket, lw_network::error_code &e) {
-    Socket::accept(socket, e);
-    if (e == lw_network::no_error) {
-        initSession(e);
-    }
-}
-
 signed_size_type lw_network::SSLSocket::read(lw_network::Buffer &buffer, lw_network::error_code &e) {
     auto ret = SSL_read(ssl_.get(), buffer.Data(), buffer.Size());
     if (ret == -1) {

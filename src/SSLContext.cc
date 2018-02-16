@@ -22,7 +22,7 @@ std::array<lw_network::SSLContext::SSLMethodBuilder, 12> const lw_network::SSLCo
         SSLv23_client_method
 };
 
-lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m) throw(std::runtime_error) {
+lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m) throw(std::runtime_error): sslInit_(lw_network::SSLInit::instance()) {
     ctx_ = std::shared_ptr<SSL_CTX>(
             SSL_CTX_new(methodBuilder_[static_cast<int>(m)]()),
             [](auto ctxPtr) {
@@ -63,9 +63,11 @@ bool lw_network::SSLContext::checkPrivateKey_() {
     return SSL_CTX_check_private_key(ctx_.get()) != 0;
 }
 
-lw_network::SSLContext::SSLContext(const lw_network::SSLContext &other): ctx_(other.ctx_) {}
+lw_network::SSLContext::SSLContext(
+        const lw_network::SSLContext &other): ctx_(other.ctx_), sslInit_(SSLInit::instance()) {}
 
-lw_network::SSLContext::SSLContext(lw_network::SSLContext &&other): ctx_(std::move(other.ctx_)) {}
+lw_network::SSLContext::SSLContext(
+        lw_network::SSLContext &&other): ctx_(std::move(other.ctx_)), sslInit_(SSLInit::instance()) {}
 
 lw_network::SSLContext &lw_network::SSLContext::operator=(const lw_network::SSLContext &other) {
     ctx_ = other.ctx_;
@@ -75,6 +77,20 @@ lw_network::SSLContext &lw_network::SSLContext::operator=(const lw_network::SSLC
 lw_network::SSLContext &lw_network::SSLContext::operator=(lw_network::SSLContext &&other) {
     ctx_ = std::move(other.ctx_);
     return *this;
+}
+
+void lw_network::SSLContext::loadVerifyFile(std::string_view file, std::string_view path) {
+    if (::SSL_CTX_load_verify_locations(ctx_.get(), file.data(), path.empty() ? nullptr : path.data()) != 0) {
+        throw std::runtime_error(ERR_error_string(ERR_get_error(), nullptr));
+    }
+}
+
+void lw_network::SSLContext::setVerifyMode(lw_network::SSLContext::Mode mode) {
+    SSL_CTX_set_verify(ctx_.get(), static_cast<int>(mode), nullptr/*TODO SET*/);
+}
+
+void lw_network::SSLContext::setVerifyDepth(std::uint32_t depth) {
+    SSL_CTX_set_verify_depth(ctx_.get(), depth);
 }
 
 lw_network::SSLContext::operator SSL_CTX *() const {

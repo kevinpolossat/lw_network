@@ -28,8 +28,6 @@ public:
     SSLSocket & operator = (SSLSocket && other);
 
     void close(error_code &e) override;
-    void connect(EndPoint const & endPoint, error_code &e) override;
-    void accept(Socket & socket, error_code &e) override;
     signed_size_type recv(Buffer & buffer, int flags, error_code &e) override;
     signed_size_type send(Buffer & buffer, int flags, error_code &e) override;
 

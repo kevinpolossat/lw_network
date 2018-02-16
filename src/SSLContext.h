@@ -10,6 +10,7 @@
 #include <array>
 #include <memory>
 #include <string_view>
+#include "SSLInit.h"
 
 namespace lw_network {
 class SSLContext {
@@ -29,10 +30,15 @@ public:
         SSLv23_client
     };
     enum class FileFormat {
-        PEM,
-        ASN1
+        PEM = SSL_FILETYPE_PEM,
+        ASN1 = SSL_FILETYPE_ASN1
     };
-
+    enum class Mode {
+        verify_none = SSL_VERIFY_NONE,
+        verify_peer = SSL_VERIFY_PEER,
+        verify_fail_if_no_peer_cert = SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+        verify_client_once = SSL_VERIFY_CLIENT_ONCE
+    };
 public:
     SSLContext(Method m) throw(std::runtime_error);
 
@@ -50,9 +56,16 @@ public:
 
     void usePrivateKeyFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
 
+    void loadVerifyFile(std::string_view file, std::string_view path = "");
+
+    void setVerifyMode(Mode mode);
+
+    void setVerifyDepth(std::uint32_t depth);
+
     operator SSL_CTX*() const;
 private:
     std::shared_ptr<SSL_CTX> ctx_;
+    SSLInit &sslInit_;
 private:
     using SSLMethodBuilder = const SSL_METHOD *(*)();
     static std::array<SSLMethodBuilder, 12> const methodBuilder_;

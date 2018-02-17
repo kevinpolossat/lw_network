@@ -22,7 +22,7 @@ std::array<lw_network::SSLContext::SSLMethodBuilder, 12> const lw_network::SSLCo
         SSLv23_client_method
 };
 
-lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m) throw(std::runtime_error): sslInit_(lw_network::SSLInit::instance()) {
+lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m): sslInit_(lw_network::SSLInit::instance()) {
     ctx_ = std::shared_ptr<SSL_CTX>(
             SSL_CTX_new(methodBuilder_[static_cast<int>(m)]()),
             [](auto ctxPtr) {
@@ -34,7 +34,7 @@ lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m) throw(std::
     }
 }
 
-void lw_network::SSLContext::useCertificateFile(std::string_view file, lw_network::SSLContext::FileFormat pem) throw(std::runtime_error) {
+void lw_network::SSLContext::useCertificateFile(std::string const & file, lw_network::SSLContext::FileFormat pem) {
     if (::SSL_CTX_use_certificate_file(
             ctx_.get(),
             file.data(),
@@ -43,13 +43,13 @@ void lw_network::SSLContext::useCertificateFile(std::string_view file, lw_networ
     }
 }
 
-void lw_network::SSLContext::useCertificateChainFile(std::string_view file) throw(std::runtime_error) {
+void lw_network::SSLContext::useCertificateChainFile(std::string const & file) {
     if (::SSL_CTX_use_certificate_chain_file(ctx_.get(), file.data()) <= 0) {
         throw std::runtime_error(ERR_error_string(ERR_get_error(), nullptr));
     }
 }
 
-void lw_network::SSLContext::usePrivateKeyFile(std::string_view file, lw_network::SSLContext::FileFormat pem) throw(std::runtime_error) {
+void lw_network::SSLContext::usePrivateKeyFile(std::string const & file, lw_network::SSLContext::FileFormat pem) {
     if (SSL_CTX_use_PrivateKey_file(
             ctx_.get(),
             file.data(),
@@ -79,7 +79,7 @@ lw_network::SSLContext &lw_network::SSLContext::operator=(lw_network::SSLContext
     return *this;
 }
 
-void lw_network::SSLContext::loadVerifyFile(std::string_view file, std::string_view path) {
+void lw_network::SSLContext::loadVerifyFile(std::string const & file, std::string const & path) {
     if (::SSL_CTX_load_verify_locations(ctx_.get(), file.data(), path.empty() ? nullptr : path.data()) != 0) {
         throw std::runtime_error(ERR_error_string(ERR_get_error(), nullptr));
     }
@@ -93,6 +93,6 @@ void lw_network::SSLContext::setVerifyDepth(std::uint32_t depth) {
     SSL_CTX_set_verify_depth(ctx_.get(), depth);
 }
 
-lw_network::SSLContext::operator SSL_CTX *() const {
+SSL_CTX *lw_network::SSLContext::getLowLevelContext() {
     return ctx_.get();
 }

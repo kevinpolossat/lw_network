@@ -9,7 +9,7 @@
 #include <openssl/ssl.h>
 #include <array>
 #include <memory>
-#include <string_view>
+#include <string>
 #include "SSLInit.h"
 
 namespace lw_network {
@@ -40,7 +40,7 @@ public:
         verify_client_once = SSL_VERIFY_CLIENT_ONCE
     };
 public:
-    SSLContext(Method m) throw(std::runtime_error);
+    SSLContext(Method m);
 
     SSLContext(SSLContext const &other);
 
@@ -50,19 +50,20 @@ public:
 
     SSLContext &operator=(SSLContext &&other);
 
-    void useCertificateFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
+    void useCertificateFile(std::string const & file, FileFormat pem);
 
-    void useCertificateChainFile(std::string_view file) throw(std::runtime_error);
+    void useCertificateChainFile(std::string const & file);
 
-    void usePrivateKeyFile(std::string_view file, FileFormat pem) throw(std::runtime_error);
+    void usePrivateKeyFile(std::string const & file, FileFormat pem);
 
-    void loadVerifyFile(std::string_view file, std::string_view path = "");
+    void loadVerifyFile(std::string const & file, std::string const & path = "");
 
     void setVerifyMode(Mode mode);
 
     void setVerifyDepth(std::uint32_t depth);
 
-    operator SSL_CTX*() const;
+    SSL_CTX *getLowLevelContext();
+
 private:
     std::shared_ptr<SSL_CTX> ctx_;
     SSLInit &sslInit_;

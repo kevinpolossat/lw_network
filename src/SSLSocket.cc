@@ -28,7 +28,6 @@ lw_network::SSLSocket &lw_network::SSLSocket::operator=(lw_network::SSLSocket &&
     ssl_ = std::move(other.ssl_);
     return *this;
 }
-
 signed_size_type lw_network::SSLSocket::read(lw_network::Buffer &buffer, lw_network::error_code &e) {
     auto ret = SSL_read(ssl_.get(), buffer.Data(), buffer.Size());
     if (ret == -1) {
@@ -69,7 +68,7 @@ void lw_network::SSLSocket::serverHandShake(lw_network::error_code &e) {
 }
 
 void lw_network::SSLSocket::initSession(error_code &e) {
-    ssl_ = std::shared_ptr<SSL>(SSL_new(ctx_), [](auto sess) {
+    ssl_ = std::shared_ptr<SSL>(SSL_new(ctx_.getLowLevelContext()), [](auto sess) {
         SSL_free(sess);
     });
     if (!ssl_) {
@@ -81,13 +80,13 @@ void lw_network::SSLSocket::initSession(error_code &e) {
 }
 
 void lw_network::SSLSocket::close(lw_network::error_code &e) {
-    e = SSL_shutdown(ssl_.get());
+   e = SSL_shutdown(ssl_.get());
     if (e == -1) {
         e = ERR_get_error();
         return ;
     }
-    Socket::close(e);
     ssl_.reset();
+    Socket::close(e);
 }
 
 signed_size_type lw_network::SSLSocket::recv(lw_network::Buffer &buffer, int, lw_network::error_code &e) {

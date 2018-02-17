@@ -17,7 +17,7 @@ int main(int ac, char **av) {
     }
     try {
         error_code e = no_error;
-        SSLContext ctx(SSLContext::Method::SSLv3_server);
+        SSLContext ctx(SSLContext::Method::SSLv23_server);
         ctx.useCertificateFile(av[1], SSLContext::FileFormat::PEM);
         ctx.usePrivateKeyFile(av[2], SSLContext::FileFormat::PEM);
         Socket listener;
@@ -53,31 +53,37 @@ int main(int ac, char **av) {
             return 1;
         }
         std::cout << "server on port 4242" << std::endl;
-        std::string s;
-        s.reserve(1024);
         for (;;) {
+            e = lw_network::no_error;
             SSLSocket sslSocket(ctx);
             listener.accept(sslSocket, e);
-            std::cout << "::ici::" << std::endl;
+
             if (e != no_error) {
                 perror("accept");
                 continue ;
             }
             sslSocket.initSession(e);
-            std::cout << "::ici::" << std::endl;
-            if (e != -1) {
+            if (e != lw_network::no_error) {
                 ERR_print_errors_fp(stderr);
                 continue ;
             }
             sslSocket.serverHandShake(e);
-            if (e != -1) {
+            if (e == -1) {
                 ERR_print_errors_fp(stderr);
                 continue ;
             }
-            Buffer b(const_cast<char *>(s.data()), s.capacity());
-            auto nrbyte = sslSocket.read(b, e);
-            std::cout << "[" << s << "]" << std::endl;
-            auto nwbyte = sslSocket.write(b, e);
+            else {
+                std::array<char, 1025> buf;
+                Buffer b(buf.data(), sizeof(buf));
+                auto nrbyte = sslSocket.read(b, e);
+                if (nrbyte > 0) {
+                    std::string s;
+                    std::copy(buf.begin(), buf.begin() + nrbyte, std::back_inserter(s));
+                    std::cout << "request:\"" << s << "\"" << std::endl;
+                    //auto nwbyte = sslSocket.write(b, e);
+                }
+            }
+            sslSocket.close(e);
         }
     }
     catch (std::exception & e) {

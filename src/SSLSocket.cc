@@ -12,6 +12,9 @@ lw_network::SSLSocket::SSLSocket(
         Socket(s), ctx_(ctx), ssl_(nullptr), sslInit_(lw_network::SSLInit::instance()) {}
 
 lw_network::SSLSocket::SSLSocket(
+        lw_network::Socket s): Socket(s), ctx_(), ssl_(nullptr), sslInit_(lw_network::SSLInit::instance()) {}
+
+lw_network::SSLSocket::SSLSocket(
         const lw_network::SSLSocket &other):
         Socket(other),
         ctx_(other.ctx_),

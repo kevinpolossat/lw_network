@@ -30,12 +30,12 @@ public:
     ReactiveSocketBase(ReactiveSocketBase &&other) = default;
 
     ReactiveSocketBase &operator=(ReactiveSocketBase const &other) {
-        Socket::operator=(other);
+        Sock::operator=(other);
         return *this;
     }
 
     ReactiveSocketBase &operator=(ReactiveSocketBase &&other) {
-        Socket::operator=(other);
+        Sock::operator=(other);
         return *this;
     }
 
@@ -43,7 +43,7 @@ public:
         reactor_.unregisterHandler(this->getImpl(), lw_network::Reactor::read);
         reactor_.unregisterHandler(this->getImpl(), lw_network::Reactor::write);
         error_code ec = no_error;
-        Socket::close(ec);
+        Sock::close(ec);
     }
 
     void async_read_some(Buffer b, std::function<void(std::size_t nbyte, error_code ec)> completionHandler);
@@ -65,7 +65,7 @@ private:
 };
 
 using ReactiveSocket = ReactiveSocketBase<>;
-using SSLReactiveSocker = ReactiveSocketBase<SSLSocket>;
+using SSLReactiveSocket = ReactiveSocketBase<SSLSocket>;
 // TODO FACTORIZE
 template<typename T>
 class ReadOperation : public Operation {

@@ -22,16 +22,10 @@ std::array<lw_network::SSLContext::SSLMethodBuilder, 12> const lw_network::SSLCo
         SSLv23_client_method
 };
 
+lw_network::SSLContext::SSLContext(): sslInit_(lw_network::SSLInit::instance()) {}
+
 lw_network::SSLContext::SSLContext(lw_network::SSLContext::Method m): sslInit_(lw_network::SSLInit::instance()) {
-    ctx_ = std::shared_ptr<SSL_CTX>(
-            SSL_CTX_new(methodBuilder_[static_cast<int>(m)]()),
-            [](auto ctxPtr) {
-                SSL_CTX_free(ctxPtr);
-            });
-    if (!ctx_) {
-        ERR_print_errors_fp(stderr);
-        throw std::runtime_error(ERR_error_string(ERR_get_error(), nullptr));
-    }
+    this->fromMethod(m);
 }
 
 void lw_network::SSLContext::useCertificateFile(std::string const & file, lw_network::SSLContext::FileFormat pem) {
@@ -95,4 +89,16 @@ void lw_network::SSLContext::setVerifyDepth(std::uint32_t depth) {
 
 SSL_CTX *lw_network::SSLContext::getLowLevelContext() {
     return ctx_.get();
+}
+
+void lw_network::SSLContext::fromMethod(lw_network::SSLContext::Method m) {
+    ctx_ = std::shared_ptr<SSL_CTX>(
+            SSL_CTX_new(methodBuilder_[static_cast<int>(m)]()),
+            [](auto ctxPtr) {
+                SSL_CTX_free(ctxPtr);
+            });
+    if (!ctx_) {
+        ERR_print_errors_fp(stderr);
+        throw std::runtime_error(ERR_error_string(ERR_get_error(), nullptr));
+    }
 }

@@ -40,6 +40,8 @@ public:
         verify_client_once = SSL_VERIFY_CLIENT_ONCE
     };
 public:
+    SSLContext();
+
     SSLContext(Method m);
 
     SSLContext(SSLContext const &other);
@@ -64,6 +66,7 @@ public:
 
     SSL_CTX *getLowLevelContext();
 
+    void fromMethod(Method m);
 private:
     std::shared_ptr<SSL_CTX> ctx_;
     SSLInit &sslInit_;

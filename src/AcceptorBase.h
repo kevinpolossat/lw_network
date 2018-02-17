@@ -15,7 +15,7 @@
 namespace lw_network {
 
 template<typename T = Socket>
-class AcceptorBase: public T {
+class AcceptorBase: public Socket {
     static_assert(std::is_base_of<Socket, T>::value, "Socket base should be a derived class of Socket");
 public:
     AcceptorBase(AcceptorBase const & other) = delete;

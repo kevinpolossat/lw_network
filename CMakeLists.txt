@@ -42,8 +42,7 @@ set(SOURCES
 		${PROJECT_SOURCE_DIR}/src/SSLContext.h
 		${PROJECT_SOURCE_DIR}/src/SSLSocket.cc
 		${PROJECT_SOURCE_DIR}/src/SSLSocket.h
-		${PROJECT_SOURCE_DIR}/src/SSLReactiveSocket.cc
-		${PROJECT_SOURCE_DIR}/src/SSLReactiveSocket.h)
+		)
 
 set(TEST_SOURCES
         ${PROJECT_SOURCE_DIR}/test/resolver_test.cc)
@@ -139,7 +138,14 @@ if (LW_NETWORK_EXAMPLE)
 	target_link_libraries(udpsender PRIVATE ${LW_NETWORK_LIBRARY})
 
 	#example ssl server
-	add_executable(ssl_server example/ssl/server.cc)
+	add_executable(ssl_server example/ssl/server/main.cc)
+		target_sources(ssl_server
+				PRIVATE example/ssl/server/Server.cc
+				PRIVATE example/ssl/server/Server.h
+				PRIVATE example/ssl/server/ConnectionManager.h
+				PRIVATE example/ssl/server/ConnectionManager.cc
+				PRIVATE example/ssl/server/Connection.cc
+				PRIVATE example/ssl/server/Connection.h)
 	target_include_directories(ssl_server PRIVATE ./src)
 	target_link_libraries(ssl_server PRIVATE ${LW_NETWORK_LIBRARY})
 

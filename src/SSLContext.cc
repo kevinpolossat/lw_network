@@ -5,10 +5,10 @@
 #include <exception>
 #include "SSLContext.h"
 
-std::array<lw_network::SSLContext::SSLMethodBuilder, 12> const lw_network::SSLContext::methodBuilder_ = {
-        SSLv2_method,
+std::array<lw_network::SSLContext::SSLMethodBuilder, 9> const lw_network::SSLContext::methodBuilder_ = {
+/*        SSLv2_method,
         SSLv2_server_method,
-        SSLv2_client_method,
+        SSLv2_client_method,*/
         SSLv3_method,
         SSLv3_server_method,
         SSLv3_client_method,

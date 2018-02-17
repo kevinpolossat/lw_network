@@ -16,9 +16,9 @@ namespace lw_network {
 class SSLContext {
 public:
     enum class Method {
-        SSLv2,
+/*        SSLv2,
         SSLv2_server,
-        SSLv2_client,
+        SSLv2_client,*/
         SSLv3,
         SSLv3_server,
         SSLv3_client,
@@ -72,7 +72,7 @@ private:
     SSLInit &sslInit_;
 private:
     using SSLMethodBuilder = const SSL_METHOD *(*)();
-    static std::array<SSLMethodBuilder, 12> const methodBuilder_;
+    static std::array<SSLMethodBuilder, 9> const methodBuilder_;
 
     bool checkPrivateKey_();
 };

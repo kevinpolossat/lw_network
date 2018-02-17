@@ -6,10 +6,10 @@
 #define LW_TCP_SERVER_SSLCONTEXT_H
 
 
-#include <openssl/ssl.h>
 #include <array>
 #include <memory>
 #include <string>
+#include "SSLHeader.h"
 #include "SSLInit.h"
 
 namespace lw_network {

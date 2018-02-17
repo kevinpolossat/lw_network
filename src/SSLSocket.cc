@@ -3,7 +3,6 @@
 //
 
 #include <exception>
-#include <openssl/err.h>
 #include "SSLSocket.h"
 
 lw_network::SSLSocket::SSLSocket(

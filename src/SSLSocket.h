@@ -6,7 +6,7 @@
 #define LW_TCP_SERVER_SSLSOCKET_H
 
 #include <memory>
-#include <openssl/ssl.h>
+#include "SSLHeader.h"
 #include "Socket.h"
 #include "SSLContext.h"
 #include "SSLInit.h"

@@ -42,6 +42,7 @@ set(SOURCES
 		${PROJECT_SOURCE_DIR}/src/SSLContext.h
 		${PROJECT_SOURCE_DIR}/src/SSLSocket.cc
 		${PROJECT_SOURCE_DIR}/src/SSLSocket.h
+		${PROJECT_SOURCE_DIR}/src/SSLHeader.h
 		)
 
 set(TEST_SOURCES

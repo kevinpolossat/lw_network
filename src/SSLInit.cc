@@ -2,8 +2,7 @@
 // Created by Kévin POLOSSAT on 10/02/2018.
 //
 
-#include <openssl/ssl.h>
-#include <openssl/err.h>
+#include "SSLHeader.h"
 #include "SSLInit.h"
 
 lw_network::SSLInit &lw_network::SSLInit::instance() {

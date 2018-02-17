@@ -42,6 +42,7 @@ private:
 };
 
 using Acceptor = AcceptorBase<>;
+using SSLAcceptor = AcceptorBase<SSLSocket>;
 
 template<typename T>
 class AcceptOperation: public Operation {

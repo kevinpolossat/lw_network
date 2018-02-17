@@ -19,7 +19,8 @@ public:
         server
     };
 public:
-    explicit SSLSocket(lw_network::SSLContext & ctx, Socket s = invalid_socket);
+    explicit SSLSocket(lw_network::SSLContext const & ctx, Socket s = invalid_socket);
+    explicit SSLSocket(Socket s = invalid_socket);
     ~SSLSocket() = default;
 
     SSLSocket(SSLSocket const & other);
@@ -37,6 +38,7 @@ public:
     signed_size_type read(Buffer & buffer, error_code &e);
     signed_size_type write(Buffer & buffer, error_code &e);
     void initSession(error_code &e);
+    void setContext(lw_network::SSLContext const & ctx);
 private:
     std::shared_ptr<SSL> ssl_;
     lw_network::SSLContext ctx_;

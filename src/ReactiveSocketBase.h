@@ -11,6 +11,7 @@
 #include "Reactor.h"
 #include "Buffer.h"
 #include "Operation.h"
+#include "SSLSocket.h"
 
 namespace lw_network {
 
@@ -64,7 +65,7 @@ private:
 };
 
 using ReactiveSocket = ReactiveSocketBase<>;
-
+using SSLReactiveSocker = ReactiveSocketBase<SSLSocket>;
 // TODO FACTORIZE
 template<typename T>
 class ReadOperation : public Operation {
